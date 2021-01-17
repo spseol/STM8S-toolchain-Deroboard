@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm8s_conf.h
   * @author  MCD Application Team
-  * @version V2.2.0
-  * @date    30-September-2014
+  * @version V2.3.0
+  * @date    16-June-2017
   * @brief   This file is used to configure the Library.
    ******************************************************************************
   * @attention
@@ -34,9 +34,9 @@
 
 /* Uncomment the line below to enable peripheral header file inclusion */
 #if defined(STM8S105) || defined(STM8S005) || defined(STM8S103) || defined(STM8S003) ||\
-    defined(STM8S903) || defined (STM8AF626x) || defined (STM8AF622x)
+    defined(STM8S001) || defined(STM8S903) || defined (STM8AF626x) || defined (STM8AF622x)
 #include "stm8s_adc1.h" 
-#endif /* (STM8S105) ||(STM8S103) || (STM8S903) || (STM8AF626x) || (STM8AF622x) */
+#endif /* (STM8S105) ||(STM8S103) || (STM8S001) || (STM8S903) || (STM8AF626x) || (STM8AF622x) */
 #if defined(STM8S208) || defined(STM8S207) || defined(STM8S007) || defined (STM8AF52Ax) ||\
     defined (STM8AF62Ax)
  #include "stm8s_adc2.h"
@@ -71,9 +71,9 @@
  #include "stm8s_tim6.h"
 #endif  /* (STM8S903) || (STM8AF622x) */
 #if defined(STM8S208) ||defined(STM8S207) || defined(STM8S007) ||defined(STM8S103) ||\
-    defined(STM8S003) || defined(STM8S903) || defined (STM8AF52Ax) || defined (STM8AF62Ax)
+    defined(STM8S003) ||defined(STM8S001) || defined(STM8S903) || defined (STM8AF52Ax) || defined (STM8AF62Ax)
  #include "stm8s_uart1.h"
-#endif /* (STM8S208) || (STM8S207) || (STM8S103) || (STM8S903) || (STM8AF52Ax) || (STM8AF62Ax) */
+#endif /* (STM8S208) || (STM8S207) || (STM8S103) || (STM8S001) || (STM8S903) || (STM8AF52Ax) || (STM8AF62Ax) */
 #if defined(STM8S105) || defined(STM8S005) ||  defined (STM8AF626x)
  #include "stm8s_uart2.h"
 #endif /* (STM8S105) || (STM8AF626x) */

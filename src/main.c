@@ -1,25 +1,46 @@
 #include "stm8s.h"
-#include "__assert__.h"
-#include "delay.h"
-/*#include "milis.h"*/
+#include "milis.h"
 
-void delay_ms(uint16_t ms)
+/*#include "delay.h"*/
+/*#include <stdio.h>*/
+/*#include "../lib/uart.c"*/
+
+#define _ISOC99_SOURCE
+#define _GNU_SOURCE
+
+#define LED_PORT GPIOC
+#define LED_PIN  GPIO_PIN_5
+#define LED_ON   GPIO_WriteHigh(LED_PORT, LED_PIN);
+#define LED_OFF  GPIO_WriteLow(LED_PORT, LED_PIN);
+#define LED_FLIP GPIO_WriteReverse(LED_PORT, LED_PIN);
+
+
+void init(void)
 {
-    for (uint16_t d = 0; d < ms; d++) {
-        _delay_us(250);
-        _delay_us(250);
-        _delay_us(250);
-        _delay_us(2);
-    }
+    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);      // taktovani MCU na 16MHz
+    GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUT_PP_LOW_SLOW);
+    init_milis();
 }
+
 
 void main(void)
 {
-    CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1); // taktovani MCU na 16MHz
-    GPIO_Init(GPIOC, GPIO_PIN_5, GPIO_MODE_OUT_PP_LOW_SLOW);
-    /*init_milis();*/
+    uint32_t time = 0;
+    init();
+    /*init_uart();*/
+
     while (1) {
-        GPIO_WriteReverse(GPIOC, GPIO_PIN_5);
-        delay_ms(777);
+
+        if (milis() - time > 577) {
+            GPIO_WriteReverse(GPIOC, GPIO_PIN_5);
+            time = milis();
+        }
+
+        /*LED_FLIP; */
+        /*_delay_ms(333);*/
+        /*printf("Funguje to!!!\n");*/
     }
 }
+
+/*-------------------------------  Assert -----------------------------------*/
+#include "__assert__.h"
