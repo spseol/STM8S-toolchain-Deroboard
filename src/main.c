@@ -14,6 +14,10 @@
 #define LED_OFF  GPIO_WriteLow(LED_PORT, LED_PIN);
 #define LED_FLIP GPIO_WriteReverse(LED_PORT, LED_PIN);
 
+#define BTN_PORT GPIOE
+#define BTN_PIN  GPIO_PIN_4
+#define BTN_PUSH (GPIO_ReadInputPin(BTN_PORT, BTN_PIN)==RESET) 
+
 
 void init(void)
 {
@@ -31,7 +35,7 @@ void main(void)
 
     while (1) {
 
-        if (milis() - time > 577) {
+        if (milis() - time > 577 && BTN_PUSH) {
             GPIO_WriteReverse(GPIOC, GPIO_PIN_5);
             time = milis();
         }
