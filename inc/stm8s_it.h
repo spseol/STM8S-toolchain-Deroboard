@@ -176,8 +176,8 @@
 #endif /* (STM8S105) || (STM8AF626x) */
 
 #if defined(STM8S207) || defined(STM8S007) || defined(STM8S208) || defined (STM8AF52Ax) || defined (STM8AF62Ax)
- INTERRUPT_HANDLER(UART3_RX_IRQHandler, 20);              /* UART3 RX */
- INTERRUPT_HANDLER(UART3_TX_IRQHandler, 21);              /* UART3 TX */
+ INTERRUPT_HANDLER(UART3_TX_IRQHandler, 20);              /* UART3 TX */
+ INTERRUPT_HANDLER(UART3_RX_IRQHandler, 21);              /* UART3 RX */
 #endif /* (STM8S207) || (STM8S208) || (STM8AF62Ax) || (STM8AF52Ax) */
 
 #if defined(STM8S207) || defined(STM8S007) || defined(STM8S208) || defined (STM8AF52Ax) || defined (STM8AF62Ax)
