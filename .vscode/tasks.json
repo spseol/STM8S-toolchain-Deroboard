@@ -1,0 +1,31 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: sdcc build active file",
+            "command": "/usr/bin/sdcc",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-I inc",
+                "-I SPL/inc",
+                "-mstm8",
+                "-lstm8",
+                "--std-sdcc99"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
