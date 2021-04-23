@@ -42,16 +42,4 @@ static @inline void _delay_us( const unsigned short __us ){
 	_delay_cycl( (unsigned short)( T_COUNT(__us) );
 }
 
-void _delay_ms(uint16_t ms)
-{
-    for (uint16_t d = 0; d < ms; d++)
-    {
-        _delay_us(250);
-        _delay_us(250);
-        _delay_us(250);
-        _delay_us(245);
-    }
-}
-
-
 #endif

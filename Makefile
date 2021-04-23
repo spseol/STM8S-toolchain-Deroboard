@@ -58,6 +58,7 @@ SPL_INC_DIR = ../SPL/inc/
 # add all library sources used here singly ... or all .c files in SPL src dir
 SPL_SOURCE  = stm8s_gpio.c stm8s_clk.c stm8s_tim4.c stm8s_itc.c 
 SPL_SOURCE += stm8s_uart1.c
+SPL_SOURCE += stm8s_adc2.c
 #SPL_SOURCE  = $(notdir $(wildcard $(SPL_SRC_DIR)/*.c))
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.rel))
 

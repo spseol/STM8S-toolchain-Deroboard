@@ -12,6 +12,7 @@
             "includePath": [
                 "${workspaceFolder}/inc",
                 "${workspaceFolder}/src",
+                "${workspaceFolder}/../SPL/inc/",
                 "${workspaceFolder}/SPL/inc/"
             ],
             "defines": [
@@ -25,6 +26,7 @@
             "compilerArgs": [
                 "-I inc",
                 "-I SPL/inc",
+                "-I ../SPL/inc",
                 "-mstm8",
                 "-lstm8",
                 "--std-sdcc99"
