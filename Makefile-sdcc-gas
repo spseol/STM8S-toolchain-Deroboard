@@ -109,6 +109,9 @@ flash: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).hex
 	stm8flash -c stlinkv21 -p $(DEVICE_FLASH) -s flash -w $(TARGET).hex
 
+switch-original-sdcc:
+	ln -sf Makefile-sdcc Makefile
+
 # ----------------------------------------
 # Phony targets
 # ----------------------------------------
