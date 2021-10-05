@@ -1,0 +1,15 @@
+-xc
+-std=c99
+-Wall
+-pedantic
+-I.
+-I./inc/
+-I./src/
+-I../SPL/inc/
+-I../SPL/src/
+-I/usr/local/stow/sdcc-gas/share/sdcc/include
+-D_SDCC
+-D__SDCC
+-D__CLANG
+-DSTM8S208 
+-DFCPU=16000000
