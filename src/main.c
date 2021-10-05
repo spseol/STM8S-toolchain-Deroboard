@@ -27,7 +27,7 @@ void init(void)
 }
 
 
-void main(void)
+int main(void)
 {
     uint32_t time = 0;
     init();
@@ -35,8 +35,8 @@ void main(void)
 
     while (1) {
 
-        if (milis() - time > 577 && BTN_PUSH) {
-            GPIO_WriteReverse(GPIOC, GPIO_PIN_5);
+        if (milis() - time > 333 && BTN_PUSH) {
+            GPIO_WriteReverse(GPIOC, LED_PIN);
             time = milis();
         }
 

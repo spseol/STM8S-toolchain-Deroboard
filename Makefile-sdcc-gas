@@ -25,7 +25,7 @@ CP = cp
 
 # set compiler path & parameters 
 CC_ROOT =
-CC      = sdcc
+CC      = sdcc-gas
 CFLAGS  = -mstm8 --out-fmt-elf --opt-code-size
 CFLAGS += --std-sdcc99
 CFLAGS += --asm=gas --function-sections --data-sections
@@ -104,6 +104,8 @@ $(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR)/%.d
 #    @$(MKDIR) -p $(OUTPUT_DIR)
 #    $(AS) $< $(AS_FLAGS) -o $@
 
+
+all: $(TARGET).elf
 
 flash: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).hex
