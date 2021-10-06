@@ -3,6 +3,7 @@
 -Wall
 -pedantic
 -I.
+-I../inc/
 -I./inc/
 -I./src/
 -I../SPL/inc/
