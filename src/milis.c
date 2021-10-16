@@ -1,6 +1,6 @@
 #include "milis.h"
 
-#if defined(STM8S208) || defined(STM8S103)
+#if defined(STM8S208) || defined(STM8S105) || defined(STM8S103)
 
 
 #if MILIS_32BIT_TIME==1

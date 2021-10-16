@@ -13,9 +13,15 @@
 #######
 
 # STM8 device (default is STM8 discovery board)
+#DEVICE=STM8S103
+#DEVICE=STM8S105
 DEVICE=STM8S208
+#DEVICE_FLASH=stm8s103f3
+#DEVICE_FLASH=stm8s105k4
 DEVICE_FLASH=stm8s208rb
 F_CPU=16000000
+
+STLINK=stlinkv21
 
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 0
@@ -109,7 +115,7 @@ all: $(TARGET).elf
 
 flash: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).hex
-	stm8flash -c stlinkv21 -p $(DEVICE_FLASH) -s flash -w $(TARGET).hex
+	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).hex
 
 switch-original-sdcc:
 	ln -sf Makefile-sdcc Makefile
