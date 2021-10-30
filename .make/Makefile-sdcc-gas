@@ -19,19 +19,27 @@ DEVICE=STM8S208
 #DEVICE_FLASH=stm8s103f3
 #DEVICE_FLASH=stm8s105k4
 DEVICE_FLASH=stm8s208rb
-F_CPU=16000000
 
 STLINK=stlinkv21
 
-# trap handling requires SDCC >=v3.4.3
-SKIP_TRAPS = 0
+F_CPU=16000000
+
 
 MKDIR = mkdir
 CP = cp
+ifeq ($(OS),Windows_NT)
+    uname_S := Windows
+	LN = cp
+	OPENOCD = openocd  -f scripts/interface/stlink.cfg -f scripts/target/stm8s.cfg
+else
+    uname_S := $(shell uname -s)
+	LN = ln -sf
+	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
+endif
 
 # set compiler path & parameters 
 CC_ROOT =
-CC      = sdcc-gas
+CC      = sdcc
 CFLAGS  = -mstm8 --out-fmt-elf --opt-code-size
 CFLAGS += --std-sdcc99
 CFLAGS += --asm=gas --function-sections --data-sections
@@ -41,11 +49,11 @@ CFLAGS += -D F_CPU=$(F_CPU)
 CFLAGS += --debug
 
 LD = stm8-ld
-LD_FLAGS = -T./elf32stm8s003f3.x --print-memory-usage --gc-sections -Map $(OUTPUT_DIR)/map_$(DEVICE).map
+LD_FLAGS = -T.make/elf32stm8s003f3.x --print-memory-usage --gc-sections -Map $(OUTPUT_DIR)/map_$(DEVICE).map
 LIB_DIRS = $(addprefix -L, /usr/local/share/sdcc/lib/stm8)
 
-AS = stm8-as
-AS_FLAGS =
+#AS = stm8-as
+#AS_FLAGS =
 
 # set output folder and target name
 OUTPUT_DIR = ./build-$(DEVICE)
@@ -90,13 +98,18 @@ VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR):$(SDCC_LIB_SRC_DIR)
 #-include $(DEPS)
 
 
+ihx:: $(TARGET).ihx
+elf:: $(TARGET).elf
+all:: $(TARGET).ihx
+
 $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS) $(SDCC_LIB_OBJECTS)
 	$(LD) $^ -o $@ $(LD_FLAGS) $(LIBS)
+	$(LN) $@ ./out.elf
 
+$(TARGET).ihx: $(TARGET).elf
+	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
+	$(LN) $@ ./out.ihx
 
-clean:
-	@echo $(SPL_OBJECTS)
-	rm -rf $(OUTPUT_DIR)
 
 $(OUTPUT_DIR)/%.d: %.c
 	@$(MKDIR) -p $(OUTPUT_DIR)
@@ -110,19 +123,38 @@ $(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR)/%.d
 #    @$(MKDIR) -p $(OUTPUT_DIR)
 #    $(AS) $< $(AS_FLAGS) -o $@
 
+clean::
+	#@echo $(SPL_OBJECTS)
+	rm -f ./out.ihx
+	rm -f ./out.elf
+	rm -rf $(OUTPUT_DIR)
 
-all: $(TARGET).elf
+flash: $(TARGET).ihx
+	$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
 
-flash: $(TARGET).elf
-	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).hex
-	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).hex
+flash2: $(TARGET).ihx
+	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).ihx
 
-switch-original-sdcc:
-	ln -sf Makefile-sdcc Makefile
 
-# ----------------------------------------
-# Phony targets
-# ----------------------------------------
+rebuild::
+	make clean
+	make all
+
+reflash::
+	make clean
+	make flash
+
+openocd::
+	$(OPENOCD) -c "init" -c "reset halt"
+
+switch-sdcc:
+	$(LN) .make/Makefile-sdcc     Makefile
+switch-sdcc-gas:
+	$(LN) .make/Makefile-sdcc-gas Makefile
+switch-sdccrm:
+	$(LN) .make/Makefile-sdccrm Makefile
+
+
 .PHONY: clean debug
 
 # vim:ft=make

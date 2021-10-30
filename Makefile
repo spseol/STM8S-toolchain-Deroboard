@@ -1,1 +1,1 @@
-Makefile-sdcc
+.make/Makefile-sdcc

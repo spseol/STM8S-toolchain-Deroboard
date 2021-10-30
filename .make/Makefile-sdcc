@@ -19,9 +19,23 @@ DEVICE=STM8S208
 #DEVICE_FLASH=stm8s103f3
 #DEVICE_FLASH=stm8s105k4
 DEVICE_FLASH=stm8s208rb
-F_CPU=16000000
 
 STLINK=stlinkv21
+
+F_CPU=16000000
+
+
+MKDIR = mkdir
+ifeq ($(OS),Windows_NT)
+    uname_S := Windows
+	LN = cp
+	OPENOCD = openocd  -f scripts/interface/stlink.cfg -f scripts/target/stm8s.cfg
+else
+    uname_S := $(shell uname -s)
+	LN = ln -sf
+	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
+endif
+CP = cp
 
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 0
@@ -35,16 +49,14 @@ CFLAGS += -I inc
 CFLAGS += -D F_CPU=$(F_CPU)
 
 CFLAGS += --debug
-#CFLAGS += --out-fmt-elf 
+CFLAGS += --out-fmt-elf 
 
 # required for some examples for STM8S EVAL board
 #CFLAGS += -DUSE_STM8_128_EVAL
 
 # set output folder and target name
-OUTPUT_DIR = ./$(DEVICE)
-OUTPUT_DIR = ./build
-ELF        = $(OUTPUT_DIR)/out.elf
-TARGET     = $(OUTPUT_DIR)/out.hex
+OUTPUT_DIR = ./build-$(DEVICE)
+TARGET     = $(OUTPUT_DIR)/out
 
 # set project folder and files (all *.c)
 PRJ_ROOT    = .
@@ -63,9 +75,9 @@ SPL_INC_DIR = ../SPL/inc/
 #SPL_INC_DIR = ../SPL-$(DEVICE)/inc/
 # add all library sources used here singly ... or all .c files in SPL src dir
 SPL_SOURCE  = stm8s_gpio.c stm8s_clk.c stm8s_tim4.c stm8s_itc.c 
-SPL_SOURCE += stm8s_uart1.c
+#SPL_SOURCE += stm8s_uart1.c
 SPL_SOURCE += stm8s_adc2.c
-SPL_SOURCE += stm8s_flash.c
+#SPL_SOURCE += stm8s_flash.c
 #SPL_SOURCE += stm8s_tim1.c
 #SPL_SOURCE += stm8s_tim2.c
 #SPL_SOURCE += stm8s_tim3.c
@@ -78,31 +90,58 @@ INCLUDE = -I$(PRJ_INC_DIR) -I$(SPL_INC_DIR)
 # collect all source directories
 VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
 
-.PHONY: clean
 
-#all: $(TARGET) $(ELF)
-all: $(TARGET)
-
-elf: $(ELF)
+ihx:: $(TARGET).ihx
+elf:: $(TARGET).elf
+all:: $(TARGET).ihx
 
 #$(OUTPUT_DIR)/%.rel: %.c
 #    $(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $?
 
+$(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS)
+	$(CC) $(CFLAGS) -o $(TARGET).elf $^
+	$(LN) $@ ./out.elf
+	#cat $(TARGET).mem
+
+
+$(TARGET).ihx: $(TARGET).elf
+	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
+	$(LN) $@ ./out.ihx
+
 $(OUTPUT_DIR)/%.rel: %.c
+	@$(MKDIR) -p $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $? -o $@
 
-$(ELF): $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(CC) $(CFLAGS) --out-fmt-elf -o $(ELF) $^
 
-$(TARGET): $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET) $^
 
-flash: $(TARGET)
-	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET)
+clean::
+	rm -f ./out.ihx
+	rm -f ./out.elf
+	rm -Rf $(OUTPUT_DIR)
 
-clean:
-	rm $(OUTPUT_DIR)/*
+flash: $(TARGET).ihx
+	$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
 
-switch-sdcc-gas:
-	ln -sf Makefile-sdcc-gas Makefile
+flash2: $(TARGET).ihx
+	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).ihx
 
+rebuild::
+	make clean
+	make all
+
+reflash::
+	make clean
+	make flash
+
+openocd::
+	$(OPENOCD) -c "init" -c "reset halt"
+
+switch-sdcc::
+	$(LN) .make/Makefile-sdcc     Makefile
+switch-sdcc-gas::
+	$(LN) .make/Makefile-sdcc-gas Makefile
+switch-sdccrm:
+	$(LN) .make/Makefile-sdccrm Makefile
+
+
+.PHONY: clean debug
