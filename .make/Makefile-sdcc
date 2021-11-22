@@ -50,7 +50,7 @@ CFLAGS += -I inc
 CFLAGS += -D F_CPU=$(F_CPU)
 
 CFLAGS += --debug
-CFLAGS += --out-fmt-elf 
+#CFLAGS += --out-fmt-elf 
 
 # required for some examples for STM8S EVAL board
 #CFLAGS += -DUSE_STM8_128_EVAL
@@ -92,23 +92,23 @@ INCLUDE = -I$(PRJ_INC_DIR) -I$(SPL_INC_DIR)
 VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
 
 
-ihx:: $(TARGET).ihx
 elf:: $(TARGET).elf
-all:: $(TARGET).ihx
+ihx:: $(TARGET).ihx
+all:: $(TARGET).ihx $(TARGET).elf
 
 
 $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(CC) $(CFLAGS) --code-size 16384 --iram-size 1024 -o $(TARGET).elf $^
+	$(CC) $(CFLAGS) --out-fmt-elf --code-size 16384 --iram-size 1024 -o $(TARGET).elf $^
 	$(LN) $@ ./out.elf
 
-$(TARGET).ihx: $(TARGET).elf
-	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
+$(TARGET).ihx: $(PRJ_OBJECTS) $(SPL_OBJECTS)
+	$(CC) $(CFLAGS) --code-size 16384 --iram-size 1024 -o $(TARGET).ihx $^
 	$(LN) $@ ./out.ihx
 	python3 .make/sizecal.py ./out.ihx
 
 $(OUTPUT_DIR)/%.rel: %.c
 	@$(MKDIR) -p $(OUTPUT_DIR)
-	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $? -o $@
+	$(CC) $(CFLAGS) --out-fmt-elf -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $? -o $@
 #   $(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $?
 
 clean::
