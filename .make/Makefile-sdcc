@@ -116,8 +116,8 @@ clean::
 	rm -f ./out.elf
 	rm -Rf $(OUTPUT_DIR)
 
-flash: $(TARGET).ihx
-	$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
+flash: $(TARGET).elf
+	$(OPENOCD) -c "init" -c "program_device $(TARGET).elf 0"
 
 flash2: $(TARGET).ihx
 	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).ihx
