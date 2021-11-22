@@ -20,6 +20,7 @@ DEVICE=STM8S208
 #DEVICE_FLASH=stm8s105k4
 DEVICE_FLASH=stm8s208rb
 
+STLINK=stlinkv2
 STLINK=stlinkv21
 
 F_CPU=16000000
@@ -95,24 +96,20 @@ ihx:: $(TARGET).ihx
 elf:: $(TARGET).elf
 all:: $(TARGET).ihx
 
-#$(OUTPUT_DIR)/%.rel: %.c
-#    $(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $?
 
 $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET).elf $^
+	$(CC) $(CFLAGS) --code-size 16384 --iram-size 1024 -o $(TARGET).elf $^
 	$(LN) $@ ./out.elf
-	#cat $(TARGET).mem
-
 
 $(TARGET).ihx: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
 	$(LN) $@ ./out.ihx
+	python3 .make/sizecal.py ./out.ihx
 
 $(OUTPUT_DIR)/%.rel: %.c
 	@$(MKDIR) -p $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $? -o $@
-
-
+#   $(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $?
 
 clean::
 	rm -f ./out.ihx
@@ -135,6 +132,10 @@ reflash::
 
 openocd::
 	$(OPENOCD) -c "init" -c "reset halt"
+
+debug: $(TARGET).elf
+	stm8-gdb --tui $^
+
 
 switch-sdcc::
 	$(LN) .make/Makefile-sdcc     Makefile

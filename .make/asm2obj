@@ -4,6 +4,6 @@
 sdccrm $(cat $(dirname $0)/exclude_reference) -r $@
     
 for soubor in $@; do 
-    sdasstm8 -plosgff $soubor; 
+    sdasstm8 -plosg -ff $soubor; 
 done
 

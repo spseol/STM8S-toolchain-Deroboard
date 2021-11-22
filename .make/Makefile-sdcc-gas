@@ -39,7 +39,7 @@ endif
 
 # set compiler path & parameters 
 CC_ROOT =
-CC      = sdcc
+CC      = /usr/local/stow/sdcc-gas/bin/sdcc
 CFLAGS  = -mstm8 --out-fmt-elf --opt-code-size
 CFLAGS += --std-sdcc99
 CFLAGS += --asm=gas --function-sections --data-sections
@@ -78,11 +78,11 @@ SPL_INC_DIR = ../SPL-$(DEVICE)/inc/
 #SPL_SOURCE  = stm8s_gpio.c stm8s_clk.c stm8s_tim4.c stm8s_itc.c 
 #SPL_SOURCE += stm8s_uart1.c
 SPL_SOURCE  = $(notdir $(wildcard $(SPL_SRC_DIR)/*.c))
-#SPL_SOURCE  += $(notdir $(wildcard /usr/local/stow/sdcc-gas/share/sdcc/lib/src/_*.c))
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.o))
 
 SDCC_LIB_SRC_DIR = /usr/local/stow/sdcc-gas/share/sdcc/lib/src/
 SDCC_LIB_SOURCE = _mullong.c _divulong.c _mulint.c _modsint.c
+#SDCC_LIB_SOURCE  = $(notdir $(wildcard /usr/local/stow/sdcc-gas/share/sdcc/lib/src/_*.c))
 SDCC_LIB_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SDCC_LIB_SOURCE:.c=.o))
 
 # collect all include folders
@@ -109,6 +109,9 @@ $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS) $(SDCC_LIB_OBJECTS)
 $(TARGET).ihx: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
 	$(LN) $@ ./out.ihx
+	@echo MemSize:
+	@python3 .make/sizecal.py ./out.ihx
+
 
 
 $(OUTPUT_DIR)/%.d: %.c
@@ -124,7 +127,7 @@ $(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR)/%.d
 #    $(AS) $< $(AS_FLAGS) -o $@
 
 clean::
-	#@echo $(SPL_OBJECTS)
+	@echo $(SPL_OBJECTS)
 	rm -f ./out.ihx
 	rm -f ./out.elf
 	rm -rf $(OUTPUT_DIR)
@@ -146,6 +149,9 @@ reflash::
 
 openocd::
 	$(OPENOCD) -c "init" -c "reset halt"
+
+debug: $(TARGET).elf
+	stm8-gdb --tui $^
 
 switch-sdcc:
 	$(LN) .make/Makefile-sdcc     Makefile
