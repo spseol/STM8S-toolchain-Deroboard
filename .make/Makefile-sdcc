@@ -29,10 +29,16 @@ F_CPU=16000000
 MKDIR = mkdir
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
+
+	CC_ROOT = "/c/Program Files/SDCC"
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd  -f scripts/interface/stlink.cfg -f scripts/target/stm8s.cfg
+	OPENOCD = openocd  -f interface/stlink.cfg -f target/stm8s.cfg
 else
     uname_S := $(shell uname -s)
+
+	CC_ROOT = /usr/
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
 	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
 endif
@@ -42,8 +48,7 @@ CP = cp
 SKIP_TRAPS = 0
 
 # set compiler path & parameters 
-CC_ROOT =
-CC      = sdcc
+
 CFLAGS  = -mstm8 -lstm8 --opt-code-size 
 CFLAGS  = -mstm8 -lstm8 --opt-code-size --std-sdcc99 --nogcse --all-callee-saves --stack-auto --fverbose-asm --float-reent --no-peep
 CFLAGS += -I inc
@@ -144,5 +149,7 @@ switch-sdcc-gas::
 switch-sdccrm:
 	$(LN) .make/Makefile-sdccrm Makefile
 
+spl::
+	bash .make/spl.sh
 
 .PHONY: clean debug
