@@ -1,4 +1,6 @@
-#######
+######################################################
+#         Makefile pro sdccrm
+######################################################
 # makefile for STM8S_StdPeriph_Lib and SDCC compiler
 #
 # Customized by MightyPork 1/2017
@@ -29,28 +31,29 @@ F_CPU=16000000
 MKDIR = mkdir
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
+
+	CC_ROOT = "/c/Program Files/SDCC"
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd  -f scripts/interface/stlink.cfg -f scripts/target/stm8s.cfg
+	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
 else
     uname_S := $(shell uname -s)
+	
+	CC_ROOT = /usr/
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
-	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
+	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 endif
 CP = cp
 
 # trap handling requires SDCC >=v3.4.3
-SKIP_TRAPS = 0
+SKIP_TRAPS = 1
 
 # set compiler path & parameters 
-CC_ROOT =
-CC      = sdcc
 CFLAGS  = -mstm8 -lstm8 --opt-code-size 
 CFLAGS  = -mstm8 -lstm8 --opt-code-size --std-sdcc99 --nogcse --all-callee-saves --stack-auto --fverbose-asm --float-reent --no-peep
 CFLAGS += -I inc
 CFLAGS += -D F_CPU=$(F_CPU)
-
-CFLAGS += --debug
-#CFLAGS += --out-fmt-elf 
 
 # required for some examples for STM8S EVAL board
 #CFLAGS += -DUSE_STM8_128_EVAL
@@ -96,25 +99,22 @@ VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
 
 
 ihx:: $(TARGET).ihx
-elf:: $(TARGET).elf
-all:: $(TARGET).ihx
 
-$(TARGET).elf: $(PRJ_ASSMS) $(SPL_ASSMS)
+$(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
 	.make/asm2obj $^	
-	$(CC) $(CFLAGS) --out-fmt-elf -o $(TARGET).elf $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(LN) $@ ./out.elf
-
-$(TARGET).ihx: $(TARGET).elf
-	@#stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
 	$(CC) $(CFLAGS) -o $(TARGET).ihx $(PRJ_OBJECTS) $(SPL_OBJECTS)
 	$(LN) $@ ./out.ihx
+	@echo 
 	@echo MemSize:
 	@python3 .make/sizecal.py ./out.ihx
+	@echo 
 
 
-$(OUTPUT_DIR)/%.asm: %.c  
-	@mkdir -p $(OUTPUT_DIR)
-	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $? -o $@
+$(OUTPUT_DIR)/%.asm: %.c Makefile | $(OUTPUT_DIR)
+	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
+
+$(OUTPUT_DIR):
+	$(MKDIR) -p $(OUTPUT_DIR)
 
 clean::
 	rm -f ./out.ihx

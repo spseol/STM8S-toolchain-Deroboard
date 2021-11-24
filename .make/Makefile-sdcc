@@ -1,4 +1,6 @@
-#######
+######################################################
+#         Makefile pro čísté SDCC
+######################################################
 # makefile for STM8S_StdPeriph_Lib and SDCC compiler
 #
 # Customized by MightyPork 1/2017
@@ -45,17 +47,18 @@ endif
 CP = cp
 
 # trap handling requires SDCC >=v3.4.3
-SKIP_TRAPS = 0
+SKIP_TRAPS = 1
 
 # set compiler path & parameters 
-
 CFLAGS  = -mstm8 -lstm8 --opt-code-size 
 CFLAGS  = -mstm8 -lstm8 --opt-code-size --std-sdcc99 --nogcse --all-callee-saves --stack-auto --fverbose-asm --float-reent --no-peep
 CFLAGS += -I inc
 CFLAGS += -D F_CPU=$(F_CPU)
 
-CFLAGS += --debug
-#CFLAGS += --out-fmt-elf 
+
+ifeq ($(IHEX_NODEBUG),)
+	FMT_ELF = --debug --out-fmt-elf
+endif
 
 # required for some examples for STM8S EVAL board
 #CFLAGS += -DUSE_STM8_128_EVAL
@@ -98,38 +101,45 @@ VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
 
 
 elf:: $(TARGET).elf
-ihx:: $(TARGET).ihx
-all:: $(TARGET).ihx $(TARGET).elf
+ihx:: out.ihx
+out.ihx::
+	make half-clean
+	IHEX_NODEBUG=1 make $(TARGET).ihx
+	make half-clean
 
 
 $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(CC) $(CFLAGS) --out-fmt-elf --code-size 16384 --iram-size 1024 -o $(TARGET).elf $^
-	$(LN) $@ ./out.elf
+	$(CC) $(CFLAGS) $(FMT_ELF) -o $(TARGET).elf $^
+	$(CP) $@ ./out.elf
 
 $(TARGET).ihx: $(PRJ_OBJECTS) $(SPL_OBJECTS)
-	$(CC) $(CFLAGS) --code-size 16384 --iram-size 1024 -o $(TARGET).ihx $^
-	$(LN) $@ ./out.ihx
+	$(CC) $(CFLAGS) -o $(TARGET).ihx $^
+	$(CP) $@ ./out.ihx
+	@echo
 	python3 .make/sizecal.py ./out.ihx
+	@echo
 
-$(OUTPUT_DIR)/%.rel: %.c
-	@$(MKDIR) -p $(OUTPUT_DIR)
-	$(CC) $(CFLAGS) --out-fmt-elf -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $? -o $@
-#   $(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $?
+$(OUTPUT_DIR)/%.rel: %.c Makefile | $(OUTPUT_DIR)
+	$(CC) $(CFLAGS) $(FMT_ELF) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
 
-clean::
+$(OUTPUT_DIR):
+	$(MKDIR) -p $(OUTPUT_DIR)
+
+half-clean::
+	rm -Rf $(OUTPUT_DIR)
+clean: half-clean
 	rm -f ./out.ihx
 	rm -f ./out.elf
-	rm -Rf $(OUTPUT_DIR)
 
 flash: $(TARGET).elf
 	$(OPENOCD) -c "init" -c "program_device $(TARGET).elf 0"
 
-flash2: $(TARGET).ihx
-	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).ihx
+flash2: out.ihx
+	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w out.ihx
 
 rebuild::
 	make clean
-	make all
+	make 
 
 reflash::
 	make clean
