@@ -29,17 +29,21 @@ MKDIR = mkdir
 CP = cp
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
+
+	CC_ROOT = "/c/Program Files/SDCC"
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
 	OPENOCD = openocd  -f scripts/interface/stlink.cfg -f scripts/target/stm8s.cfg
 else
     uname_S := $(shell uname -s)
+
+	CC_ROOT = /usr/local/stow/sdcc-gas
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
 	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
 endif
 
 # set compiler path & parameters 
-CC_ROOT =
-CC      = /usr/local/stow/sdcc-gas/bin/sdcc
 CFLAGS  = -mstm8 --out-fmt-elf --opt-code-size
 CFLAGS += --std-sdcc99
 CFLAGS += --asm=gas --function-sections --data-sections
@@ -80,9 +84,9 @@ SPL_INC_DIR = ../SPL-$(DEVICE)/inc/
 SPL_SOURCE  = $(notdir $(wildcard $(SPL_SRC_DIR)/*.c))
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.o))
 
-SDCC_LIB_SRC_DIR = /usr/local/stow/sdcc-gas/share/sdcc/lib/src/
+SDCC_LIB_SRC_DIR = $(CC_ROOT)/share/sdcc/lib/src/
 SDCC_LIB_SOURCE = _mullong.c _divulong.c _mulint.c _modsint.c
-#SDCC_LIB_SOURCE  = $(notdir $(wildcard /usr/local/stow/sdcc-gas/share/sdcc/lib/src/_*.c))
+#SDCC_LIB_SOURCE  = $(notdir $(wildcard $(CC_ROOT)/share/sdcc/lib/src/_*.c))
 SDCC_LIB_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SDCC_LIB_SOURCE:.c=.o))
 
 # collect all include folders
@@ -109,22 +113,19 @@ $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS) $(SDCC_LIB_OBJECTS)
 $(TARGET).ihx: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
 	$(LN) $@ ./out.ihx
-	@echo MemSize:
+	@echo MemSize: 
 	@python3 .make/sizecal.py ./out.ihx
+	@echo
 
 
-
-$(OUTPUT_DIR)/%.d: %.c
-	@$(MKDIR) -p $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.d: %.c Makefile | $(OUTPUT_DIR)
 	$(CC) -c $< $(CFLAGS) -D$(DEVICE) $(INCLUDE) -MM > $@
 
 $(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR)/%.d
-	@$(MKDIR) -p $(OUTPUT_DIR)
 	$(CC) -c $< $(CFLAGS) -D$(DEVICE) $(INCLUDE)  -o $@
 
-#$(OUTPUT_DIR)/%.o: %.asm
-#    @$(MKDIR) -p $(OUTPUT_DIR)
-#    $(AS) $< $(AS_FLAGS) -o $@
+$(OUTPUT_DIR):
+	$(MKDIR) -p $(OUTPUT_DIR)
 
 clean::
 	@echo $(SPL_OBJECTS)
