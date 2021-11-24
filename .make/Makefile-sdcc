@@ -33,14 +33,14 @@ ifeq ($(OS),Windows_NT)
 	CC_ROOT = "/c/Program Files/SDCC"
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd  -f interface/stlink.cfg -f target/stm8s.cfg
+	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
 else
     uname_S := $(shell uname -s)
 
 	CC_ROOT = /usr/
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
-	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
+	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 endif
 CP = cp
 
