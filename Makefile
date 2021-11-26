@@ -20,14 +20,19 @@ endif
 CP = cp
 
 
-default::
-	@echo "Vyber si toolchain! Zavolej:"
-	@echo "make switch-sdcc"
-	@echo "  nebo"
+menu::
+	@echo "# Vyber si toolchain!"
+	@echo
+	@echo "# Pokud chceš debug a nevadí ti větší binárka, zavolej:"
+	@echo "make switch-sdcc "
+	@echo
+	@echo "# Pokud chceš malé binárky a nepotřebuješ debug zavolej:"
 	@echo "make switch-sdccrm"
-	@echo "  nebo"
+	@echo
+	@echo "# Pokud chceš malé binárky i debug a máš 'sdcc-gas' zavolej:"
 	@echo "make switch-sdcc-gas"
 
+default: switch-sdcc
 switch-sdcc::
 	$(LN) .make/Makefile-sdcc     Makefile
 switch-sdcc-gas::

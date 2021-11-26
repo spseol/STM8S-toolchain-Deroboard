@@ -40,7 +40,7 @@ ifeq ($(OS),Windows_NT)
 else
     uname_S := $(shell uname -s)
 	
-	CC_ROOT = /usr/
+	CC_ROOT = /usr
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
 	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
