@@ -1,0 +1,5 @@
+alias make='make -j12'
+
+complete -W "\`grep -oE '^[a-zA-Z0-9_.-]+:([^=]|$)' ?akefile | sed 's/[^a-zA-Z0-9_.-]*$//'\`" make
+
+source /c/Program\ Files/Git/mingw64/share/git/completion/git-completion.bash 

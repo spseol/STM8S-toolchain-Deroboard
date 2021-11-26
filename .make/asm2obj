@@ -1,9 +1,19 @@
-#!/bin/zsh
+#!/bin/bash
 
 
-sdccrm $(cat $(dirname $0)/exclude_reference) -r $@
-    
+
+if [[ $OS == Windows_NT ]]; then
+    echo Windows
+    sdccrm=.make/sdccrm.exe
+    sdasstm8='/c/Program Files/SDCC/bin/sdasstm8.exe'
+else
+    echo Linux
+    sdccrm=sdccrm
+    sdasstm8=sdasstm8
+fi
+
+"$sdccrm" $(tr '\r\n' ' ' < exclude_reference) -r $@
+
 for soubor in $@; do 
-    sdasstm8 -plosg -ff $soubor; 
+    "$sdasstm8" -plosg -ff $soubor; 
 done
-
