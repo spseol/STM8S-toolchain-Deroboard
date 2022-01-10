@@ -1,20 +1,34 @@
 #!/bin/bash
 
+SPLS=(SPL SPL-STM8S103 SPL-STM8S105 SPL-STM8S208)
+
+#####################################################################################
+
+any_dir_not_exists() {
+    for dir in $@; do
+        if ! [ -d $dir ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+#####################################################################################
+
 cd ..
-curl https://mamut.spseol.cz/nozka/public/spl.tgz -O spl.tgz
 
-if ! [ -d SPL ]; then
-    tar xzf spl.tgz SPL
-fi
+if any_dir_not_exists ${SPLS[@]} ; then
 
-if ! [ -d SPL-STM8S103 ]; then
-    tar xzf spl.tgz SPL-STM8S103
-fi
-if ! [ -d SPL-STM8S105 ]; then
-    tar xzf spl.tgz SPL-STM8S105
-fi
-if ! [ -d SPL-STM8S208 ]; then
-    tar xzf spl.tgz SPL-STM8S208
-fi
+    curl https://mamut.spseol.cz/nozka/public/spl.tgz -O spl.tgz
 
-rm spl.tgz
+    for dir in ${SPLS[@]}; do
+        if ! [ -d $dir ]; then
+            echo Rozbaluju $dir
+            tar xzf spl.tgz $dir
+        fi
+    done
+
+    rm  spl.tgz
+else
+    echo "Vše je připraveno"
+fi
