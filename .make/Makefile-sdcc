@@ -76,6 +76,7 @@ PRJ_INC_DIR = $(PRJ_ROOT)/inc
 # all project sources included by default
 PRJ_SOURCE  = $(notdir $(wildcard $(PRJ_SRC_DIR)/*.c))
 PRJ_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.rel))
+PRJ_INCS  = $(wildcard $(PRJ_INC_DIR)/*.h)
 
 # set SPL paths
 #SPL_SRC_DIR = /usr/local/lib/stm8/src/
@@ -121,7 +122,7 @@ $(TARGET).ihx: $(PRJ_OBJECTS) $(SPL_OBJECTS)
 	@$(PYTHON) .make/sizecal.py ./out.ihx
 	@echo
 
-$(OUTPUT_DIR)/%.rel: %.c Makefile | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.rel: %.c $(PRJ_INCS) Makefile | $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) $(FMT_ELF) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
 
 $(OUTPUT_DIR):
@@ -154,12 +155,10 @@ debug: $(TARGET).elf
 	stm8-gdb --tui $^
 
 
-switch-sdcc::
-	$(LN) .make/Makefile-sdcc     Makefile
 switch-sdcc-gas::
-	$(LN) .make/Makefile-sdcc-gas Makefile
+	$(LN) .make/Makefile-sdcc-gas Makefile || $(CP) .make/Makefile-sdcc-gas Makefile
 switch-sdccrm:
-	$(LN) .make/Makefile-sdccrm Makefile
+	$(LN) .make/Makefile-sdccrm Makefile || $(CP) .make/Makefile-sdccrm Makefile
 
 spl::
 	bash .make/spl.sh

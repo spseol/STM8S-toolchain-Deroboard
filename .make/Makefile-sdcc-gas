@@ -70,6 +70,7 @@ PRJ_INC_DIR = $(PRJ_ROOT)/inc
 # all project sources included by default
 PRJ_SOURCE  = $(notdir $(wildcard $(PRJ_SRC_DIR)/*.c))
 PRJ_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.o))
+PRJ_INCS  = $(wildcard $(PRJ_INC_DIR)/*.h)
 
 # set SPL paths
 #SPL_SRC_DIR = /usr/local/lib/stm8/src/
@@ -118,7 +119,7 @@ $(TARGET).ihx: $(TARGET).elf
 	@echo
 
 
-$(OUTPUT_DIR)/%.d: %.c Makefile | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.d: %.c $(PRJ_INCS) Makefile | $(OUTPUT_DIR)
 	$(CC) -c $< $(CFLAGS) -D$(DEVICE) $(INCLUDE) -MM > $@
 
 $(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR)/%.d
@@ -154,13 +155,13 @@ openocd::
 debug: $(TARGET).elf
 	stm8-gdb --tui $^
 
-switch-sdcc:
-	$(LN) .make/Makefile-sdcc     Makefile
-switch-sdcc-gas:
-	$(LN) .make/Makefile-sdcc-gas Makefile
+switch-sdcc::
+	$(LN) .make/Makefile-sdcc Makefile || $(CP) .make/Makefile-sdcc Makefile
 switch-sdccrm:
-	$(LN) .make/Makefile-sdccrm Makefile
+	$(LN) .make/Makefile-sdccrm Makefile || $(CP) .make/Makefile-sdccrm Makefile
 
+spl::
+	bash .make/spl.sh
 
 .PHONY: clean debug
 

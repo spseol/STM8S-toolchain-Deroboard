@@ -28,11 +28,11 @@ menu::
 	@echo \"make sdcc-gas\"
 
 default: sdcc
-sdcc::
+sdcc:: spl
 	$(LN) .make/Makefile-sdcc Makefile || cp .make/Makefile-sdcc Makefile
-sdccrm::
+sdccrm:: spl
 	$(LN) .make/Makefile-sdccrm Makefile || cp .make/Makefile-sdccrm Makefile
-sdcc-gas::
+sdcc-gas:: spl
 	$(LN) .make/Makefile-sdcc-gas Makefile || cp .make/Makefile-sdcc-gas Makefile
 
 spl::

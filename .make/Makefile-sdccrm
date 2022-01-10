@@ -71,6 +71,7 @@ PRJ_INC_DIR = $(PRJ_ROOT)/inc
 # all project sources included by default
 PRJ_SOURCE  = $(notdir $(wildcard $(PRJ_SRC_DIR)/*.c))
 PRJ_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.rel))
+PRJ_INCS  = $(wildcard $(PRJ_INC_DIR)/*.h)
 PRJ_ASSMS := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.asm))
 PRJ_ASSRM := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.asmrm))
 
@@ -112,7 +113,7 @@ $(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
 	@echo 
 
 
-$(OUTPUT_DIR)/%.asm: %.c Makefile | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.asm: %.c Makefile $(PRJ_INCS) | $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
 
 $(OUTPUT_DIR):
@@ -144,11 +145,11 @@ debug: $(TARGET).elf
 
 
 switch-sdcc::
-	$(LN) .make/Makefile-sdcc     Makefile
+	$(LN) .make/Makefile-sdcc Makefile || $(CP) .make/Makefile-sdcc Makefile
 switch-sdcc-gas::
-	$(LN) .make/Makefile-sdcc-gas Makefile
-switch-sdccrm:
-	$(LN) .make/Makefile-sdccrm Makefile
+	$(LN) .make/Makefile-sdcc-gas Makefile || $(CP) .make/Makefile-sdcc-gas Makefile
 
+spl::
+	bash .make/spl.sh
 
 .PHONY: clean
