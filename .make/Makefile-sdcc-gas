@@ -33,7 +33,7 @@ ifeq ($(OS),Windows_NT)
 	CC_ROOT = "/c/Program Files/SDCC"
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd  -f scripts/interface/stlink.cfg -f scripts/target/stm8s.cfg
+	OPENOCD = openocd  -f interface/stlink.cfg -f target/stm8s.cfg
 else
     uname_S := $(shell uname -s)
 
@@ -53,7 +53,7 @@ CFLAGS += -D F_CPU=$(F_CPU)
 CFLAGS += --debug
 
 LD = stm8-ld
-LD_FLAGS = -T.make/elf32stm8s003f3.x --print-memory-usage --gc-sections -Map $(OUTPUT_DIR)/map_$(DEVICE).map
+LD_FLAGS = -T.make/elf32$(DEVICE_FLASH).x --print-memory-usage --gc-sections -Map $(OUTPUT_DIR)/map_$(DEVICE).map
 LIB_DIRS = $(addprefix -L, /usr/local/share/sdcc/lib/stm8)
 
 #AS = stm8-as
@@ -87,6 +87,7 @@ SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.o))
 
 SDCC_LIB_SRC_DIR = $(CC_ROOT)/share/sdcc/lib/src/
 SDCC_LIB_SOURCE = _mullong.c _divulong.c _mulint.c _modsint.c
+SDCC_LIB_SOURCE += printf_large.c _strlen.c sprintf.c vprintf.c puts.c
 #SDCC_LIB_SOURCE  = $(notdir $(wildcard $(CC_ROOT)/share/sdcc/lib/src/_*.c))
 SDCC_LIB_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SDCC_LIB_SOURCE:.c=.o))
 

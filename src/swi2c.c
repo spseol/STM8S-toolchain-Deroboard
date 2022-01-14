@@ -1,3 +1,4 @@
+// (c) Michal Dudka
 #include "swi2c.h"
 
 // read num bytes to array data from slave with desired I2C slv_addres, from desired pointer (address)

@@ -10,7 +10,10 @@
 -I../SPL/src
 -I/usr/local/stow/sdcc-gas/share/sdcc/include
 -D_SDCC
+-D_SDCC_
 -D__SDCC
+-D__SDCC__
+-DSDCC_VERSION=40000
 -D__CLANG
 -DSTM8S208 
 -DF_CPU=16000000

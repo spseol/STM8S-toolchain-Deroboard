@@ -15,15 +15,22 @@ GPIO_Init(CLK_GPIO,CLK_PIN,GPIO_MODE_OUT_PP_LOW_FAST);
 GPIO_Init(DIN_GPIO,DIN_PIN,GPIO_MODE_OUT_PP_LOW_FAST);
 }
 
-// OdesÌl· 16bit dat MSB first, SPI mode, sama prov·dÌ manipulaci s CS
-void swspi_tx16(uint16_t data){
-uint16_t maska=0b1<<15; 
-CS_L;										
-while(maska){
-if(maska & data){DIN_H;}else{DIN_L;}
-CLK_H;
-maska = maska >> 1;
-CLK_L;
+// Odes√≠l√° 16bit dat MSB first, SPI mode, sama prov√°d√≠ manipulaci s CS
+void swspi_tx16(uint16_t data)
+{
+    uint16_t maska = 1 << 15;
+
+    CS_L;
+    while (maska) {
+        if (maska & data) {
+            DIN_H;
+        } else {
+            DIN_L;
+        }
+        CLK_H;
+        maska = maska >> 1;
+        CLK_L;
+    }
+    CS_H;
 }
-CS_H;
-}
+
