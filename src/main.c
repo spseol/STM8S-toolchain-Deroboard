@@ -12,7 +12,7 @@
 #define LED_PIN  GPIO_PIN_5
 #define LED_HIGH   GPIO_WriteHigh(LED_PORT, LED_PIN)
 #define LED_LOW  GPIO_WriteLow(LED_PORT, LED_PIN)
-#define LED_TOGG GPIO_WriteReverse(LED_PORT, LED_PIN)
+#define LED_REVERSE GPIO_WriteReverse(LED_PORT, LED_PIN)
 
 #define BTN_PORT GPIOE
 #define BTN_PIN  GPIO_PIN_4
@@ -39,12 +39,12 @@ int main(void)
     while (1) {
 
         if (milis() - time > 333 && BTN_PUSH) {
-            LED_TOGG; 
+            LED_REVERSE; 
             time = milis();
             /*printf("%ld\n", time);*/
         }
 
-        /*LED_FLIP; */
+        /*LED_REVERSE; */
         /*_delay_ms(333);*/
         /*printf("Funguje to!!!\n");*/
     }
