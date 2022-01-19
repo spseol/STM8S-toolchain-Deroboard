@@ -17,3 +17,4 @@
 -D__CLANG
 -DSTM8S208 
 -DF_CPU=16000000
+-Wno-gnu-binary-literal
