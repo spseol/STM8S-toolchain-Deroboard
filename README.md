@@ -5,7 +5,7 @@ STM8 startovací toolchain
   [NUCLEO-8S208RB](https://www.st.com/en/evaluation-tools/nucleo-8s208rb.html).
 * Strom je určen pro překladač [SDCC](http://sdcc.sourceforge.net/) nebo 
   [SDCC-gas](https://github.com/XaviDCR92/sdcc-gas).
-* Standardníknihovnu pro práci s periferiemi 
+* Standardní knihovnu pro práci s periferiemi 
   [SPL](https://www.st.com/content/st_com/en/products/embedded-software/mcu-mpu-embedded-software/stm8-embedded-software/stsw-stm8069.html)
   je třeba (z licenčních důvodů) stáhnou zvlášť ze stránek výrobce a použít
   [patch](https://github.com/gicking/STM8-SPL_SDCC_patch).
@@ -59,9 +59,10 @@ do souboru `.make/exclude_reference` uvnitř projektového adresáře.
 
 #### SDCC-gas
 
-[SDCC-gas](https://github.com/XaviDCR92/sdcc-gas) vzniklo přidáním podpory [GNU
+[SDCC-gas](https://github.com/XaviDCR92/sdcc-gas) vzniklo, aby vyřešilo problém
+optimalizace mrtvého kódu přidáním podpory [GNU
 Assembleru](https://cs.wikipedia.org/wiki/GNU_Assembler) tedy *gas* do SDCC
-3.9.0; [gas](https://codedocs.org/what-is/gnu-assembler) je výhodou i nevýhodou
+3.9.0. [gas](https://codedocs.org/what-is/gnu-assembler) je výhodou i nevýhodou
 tohoto řešení. Na jednu stranu to znamená, že můžeme používat klasické nástroje
 z [GNU binutils](https://cs.wikipedia.org/wiki/GNU_binutils), na druhou stranu
 to znamená, že nelze použít ty části sdcc-libraries, které jsou napsané v STM8
@@ -72,7 +73,8 @@ přepsat do GNU assembleru.
 Použití
 --------------
 
-* `make`
+* `make spl` -- stáhne a nachystá knihovny
+* `make` -- provede kompilaci
 * `make flash` -- nahraje program do chipu
 * `make clean` -- smaže všechno, co nakompiloval
 * `make rebuild` -- smaže vše a znovu zkompiluje
@@ -83,6 +85,7 @@ Použití
 Závislosti
 ---------------
 
+* GNU Make, GNU Bash, 
 * [SDCC](http://sdcc.sourceforge.net/)
 * [SDCC-gas](https://github.com/XaviDCR92/sdcc-gas)
 * [OpenOCD](https://openocd.org/)
