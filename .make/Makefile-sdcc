@@ -29,13 +29,18 @@ F_CPU=16000000
 
 
 MKDIR = mkdir
+### OpenOCD v0.10 syntax
+#OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
+### OpenOCD v0.11 syntax
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
+CP = cp
+
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
 
 	CC_ROOT = "/c/Program Files/SDCC"
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
 	PYTHON = python
 else
     uname_S := $(shell uname -s)
@@ -43,10 +48,8 @@ else
 	CC_ROOT = /usr/
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
-	OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 	PYTHON = python3
 endif
-CP = cp
 
 # trap handling requires SDCC >=v3.4.3
 SKIP_TRAPS = 1

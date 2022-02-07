@@ -26,21 +26,24 @@ F_CPU=16000000
 
 
 MKDIR = mkdir
+### OpenOCD v0.10 syntax
+#OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
+### OpenOCD v0.11 syntax
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 CP = cp
+
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
 
 	CC_ROOT = "/c/Program Files/SDCC"
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
-	OPENOCD = openocd  -f interface/stlink.cfg -f target/stm8s.cfg
 else
     uname_S := $(shell uname -s)
 
 	CC_ROOT = /usr/local/stow/sdcc-gas
 	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
-	OPENOCD = openocd -f interface/stlink-dap.cfg -f target/stm8s.cfg
 endif
 
 # set compiler path & parameters 
