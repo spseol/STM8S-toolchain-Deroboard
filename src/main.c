@@ -1,9 +1,9 @@
 #include "stm8s.h"
 #include "milis.h"
 
-/*#include "delay.h"*/
-#include <stdio.h>
-/*#include "uart1.h"*/
+//#include "delay.h"
+//#include <stdio.h>
+//#include "uart1.h"
 
 #define _ISOC99_SOURCE
 #define _GNU_SOURCE
@@ -26,7 +26,7 @@ void setup(void)
     GPIO_Init(BTN_PORT, BTN_PIN, GPIO_MODE_IN_FL_NO_IT);
 
     init_milis();
-    /*init_uart1();*/
+    //init_uart1();
 }
 
 
@@ -41,12 +41,12 @@ int main(void)
         if (milis() - time > 333 && BTN_PUSH) {
             LED_REVERSE; 
             time = milis();
-            /*printf("%ld\n", time);*/
+            //printf("%ld\n", time);
         }
 
-        /*LED_REVERSE; */
-        /*_delay_ms(333);*/
-        /*printf("Funguje to!!!\n");*/
+        //LED_REVERSE; 
+        //delay_ms(333);
+        //printf("Funguje to!!!\n");
     }
 }
 
