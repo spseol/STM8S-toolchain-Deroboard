@@ -7,13 +7,15 @@
 // returns 0xff if bus error (blocked bus)
 // returns 0x01 if slave not present (NACK)
 // returns 0x00 if success
-// slave address in 8bit representation (left aligned 7bit value)
+// slave address in 8bit representation (right aligned 7bit value)
 uint8_t swi2c_read_buf(uint8_t slv_addr, uint8_t address, uint8_t * data,
                        uint16_t num)
 {
     uint8_t i = 0, bit;
     uint8_t ack;
     uint8_t mask;
+
+    slv_addr <<=  1;
 
 // --- Generate START ---
     if (swi2c_START()) {
@@ -109,13 +111,15 @@ uint8_t swi2c_read_buf(uint8_t slv_addr, uint8_t address, uint8_t * data,
 // returns 0xff if bus error (blocked bus)
 // returns 0x01 if slave not present (NACK)
 // returns 0x00 if success
-// slave address in 8bit representation (left aligned 7bit value)
+// slave address in 8bit representation (right aligned 7bit value)
 uint8_t swi2c_write_buf(uint8_t slv_addr, uint8_t address, uint8_t * data,
                         uint16_t num)
 {
     uint8_t i;
     uint8_t ack;
     uint8_t mask;
+
+    slv_addr <<=  1;
 
 // --- Generate START ---
     if (swi2c_START()) {
