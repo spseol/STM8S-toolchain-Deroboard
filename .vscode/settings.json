@@ -1,9 +1,4 @@
 {
-    "clangd.arguments": [
-    ],
-    "clangd.path": "clangd-11",
-    "clangd.fallbackFlags": [
-    ],
     "makefile.launchConfigurations": [
         {
             "binaryPath": "/usr/bin/make",

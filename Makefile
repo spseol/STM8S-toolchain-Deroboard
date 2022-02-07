@@ -16,15 +16,17 @@ CP = cp
 
 menu::
 	@echo "# Vyber si toolchain!"
+	@echo "# Detaily v REAME a na adrese "
+	@echo "# https://chytrosti.marrek.cz/vyvoj-stm8-s-opensource-nastroji.html"
 	@echo
-	@echo "# Pokud chceš debug a nevadí ti větší binárka, zavolej:"
-	@echo \"make sdcc\"   ... nebo
+	@echo "# Pokud chces debug a nevadi ti vetsi binarka:"
+	@echo \"make sdcc\" "     ... nebo"
 	@echo \"make default\"
 	@echo
-	@echo "# Pokud chceš malé binárky a nepotřebuješ debug zavolej:"
+	@echo "# Pokud chces male binarky a nepotrebujes debug:"
 	@echo \"make sdccrm\"
 	@echo
-	@echo "# Pokud chceš malé binárky i debug a máš 'sdcc-gas' zavolej:"
+	@echo "# Pokud chces male binarky i debug a mas 'SDCC-gas' zavolej:"
 	@echo \"make sdcc-gas\"
 
 default: sdcc
