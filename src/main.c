@@ -38,7 +38,7 @@ int main(void)
 
     while (1) {
 
-        if (milis() - time > 333 && BTN_PUSH) {
+        if (milis() - time > 333 && !BTN_PUSH) {
             LED_REVERSE; 
             time = milis();
             //printf("%ld\n", time);
