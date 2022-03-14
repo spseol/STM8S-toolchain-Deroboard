@@ -13,14 +13,10 @@
 #######
 
 # STM8 device (default is STM8 discovery board)
-#DEVICE=STM8S103
-#DEVICE=STM8S105
-DEVICE=STM8S208
-#DEVICE_FLASH=stm8s103f3
-#DEVICE_FLASH=stm8s105k4
-DEVICE_FLASH=stm8s208rb
+DEVICE=STM8S103
+DEVICE_FLASH=stm8s103f3
 
-STLINK=stlinkv21
+STLINK=stlinkv2
 
 F_CPU=16000000
 
@@ -28,11 +24,20 @@ MKDIR = mkdir
 CP = cp
 
 ifeq ($(findstring 2019, $(shell openocd --version 2>&1)), 2019)
-    stlink = stlink
+    interface = interface/stlink.cfg
 else
-    stlink = stlink-dap
+    interface = interface/stlink-dap.cfg
 endif
-OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/$(stlink).cfg -f target/stm8s.cfg
+ifeq ($(findstring 003, $(DEVICE)), 003)
+	target = target/stm8s003.cfg
+else ifeq ($(findstring 103, $(DEVICE)), 103)
+	target = target/stm8s103.cfg
+else ifeq ($(findstring 105, $(DEVICE)), 105)
+	target = target/stm8s105.cfg
+else
+	target = target/stm8s.cfg
+endif
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f $(interface) -f $(target)
 
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
@@ -161,8 +166,6 @@ openocd::
 debug: $(TARGET).elf
 	stm8-gdb --tui $^
 
-switch-sdcc::
-	$(LN) .make/Makefile-sdcc Makefile || $(CP) .make/Makefile-sdcc Makefile
 switch-sdccrm:
 	$(LN) .make/Makefile-sdccrm Makefile || $(CP) .make/Makefile-sdccrm Makefile
 

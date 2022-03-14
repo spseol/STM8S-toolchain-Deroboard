@@ -21,6 +21,7 @@
 -x _UART1_TX_IRQHandler
 -x _UART3_RX_IRQHandler
 -x _UART3_TX_IRQHandler
+-x _ADC1_IRQHandler
 -x _ADC2_IRQHandler
 -x _I2C_IRQHandler
 -x _TIM1_CAP_COM_IRQHandler
