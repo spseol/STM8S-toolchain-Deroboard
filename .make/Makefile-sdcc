@@ -37,9 +37,9 @@ else
 endif
 ifeq ($(findstring 003, $(DEVICE)), 003)
 	target = target/stm8s003.cfg
-else ($(findstring 103, $(DEVICE)), 103)
+else ifeq ($(findstring 103, $(DEVICE)), 103)
 	target = target/stm8s103.cfg
-else ($(findstring 105, $(DEVICE)), 105)
+else ifeq ($(findstring 105, $(DEVICE)), 105)
 	target = target/stm8s105.cfg
 else
 	target = target/stm8s.cfg
