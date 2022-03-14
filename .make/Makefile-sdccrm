@@ -27,13 +27,16 @@ STLINK=stlinkv21
 
 F_CPU=16000000
 
-
 MKDIR = mkdir
-### OpenOCD v0.10 syntax
-#OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink.cfg -f target/stm8s.cfg
-### OpenOCD v0.11 syntax
-OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/stlink-dap.cfg -f target/stm8s.cfg
 CP = cp
+
+ifeq ($(findstring 2019, $(shell openocd --version 2>&1)), 2019)
+    stlink = stlink
+else
+    stlink = stlink-dap
+endif
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/$(stlink).cfg -f target/stm8s.cfg
+
 
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
