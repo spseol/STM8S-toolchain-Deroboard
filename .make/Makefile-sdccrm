@@ -31,11 +31,20 @@ MKDIR = mkdir
 CP = cp
 
 ifeq ($(findstring 2019, $(shell openocd --version 2>&1)), 2019)
-    stlink = stlink
+    interface = interface/stlink.cfg
 else
-    stlink = stlink-dap
+    interface = interface/stlink-dap.cfg
 endif
-OPENOCD = openocd -f .make/stm8s-flash.cfg -f interface/$(stlink).cfg -f target/stm8s.cfg
+ifeq ($(findstring 003, $(DEVICE)), 003)
+	target = target/stm8s003.cfg
+else ($(findstring 103, $(DEVICE)), 103)
+	target = target/stm8s103.cfg
+else ($(findstring 105, $(DEVICE)), 105)
+	target = target/stm8s105.cfg
+else
+	target = target/stm8s.cfg
+endif
+OPENOCD = openocd -f .make/stm8s-flash.cfg -f $(interface) -f $(target)
 
 
 ifeq ($(OS),Windows_NT)
