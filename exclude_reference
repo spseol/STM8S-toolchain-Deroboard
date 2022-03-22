@@ -29,4 +29,7 @@
 -x _TIM3_CAP_COM_IRQHandler
 -x _TIM4_TimeBaseInit
 -x _TIM4_UPD_OVF_IRQHandler
+-x _ADC1_GetConversionValue
 -x _lcd_busy_wait
+
+

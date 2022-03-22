@@ -4,7 +4,7 @@
 #include "stm8_hd44780.h"
 
 //#include "delay.h"
-//#include <stdio.h>
+#include <stdio.h>
 //#include "uart1.h"
 
 #define _ISOC99_SOURCE
@@ -51,6 +51,10 @@ int main(void)
     lcd_gotoxy(0,0);
     lcd_puts("tesz skks");
     
+    char text[16];
+    lcd_gotoxy(0,1);
+    sprintf(text, "cislo %d", 314);
+    lcd_puts(text);
     
     while (1) {
  
