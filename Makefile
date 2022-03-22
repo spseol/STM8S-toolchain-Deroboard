@@ -1,1 +1,1 @@
-.marek/Makefile-sdccrm
+.make/Makefile-sdcc
