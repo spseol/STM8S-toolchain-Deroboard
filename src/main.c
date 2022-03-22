@@ -53,7 +53,7 @@ int main(void)
     
     char text[16];
     lcd_gotoxy(0,1);
-    sprintf(text, "cislo %d", 314);
+    sprintf(text, "cislo: %d", 314);
     lcd_puts(text);
     
     while (1) {
