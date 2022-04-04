@@ -13,7 +13,7 @@ while(Delay--);
 void lcd_store_symbol(uint8_t pos, uint8_t* charmap){
 	uint8_t i;
 if(pos>7) return;
-lcd_command(LCD_SET_CGRAM | pos);
+lcd_command(LCD_SET_CGRAM | pos * 8);
 for(i=0;i<8;i++){
 lcd_data(charmap[i]);
 }
