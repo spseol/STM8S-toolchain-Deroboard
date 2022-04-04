@@ -101,9 +101,13 @@ SPL_SOURCE  = $(notdir $(wildcard $(SPL_SRC_DIR)/*.c))
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.o))
 
 SDCC_LIB_SRC_DIR = $(CC_ROOT)/share/sdcc/lib/src/
-SDCC_LIB_SOURCE = _mullong.c _divulong.c _mulint.c _modsint.c
+#SDCC_LIB_SOURCE  = $(notdir $(wildcard $(CC_ROOT)/share/sdcc/lib/src/_mul*.c))
+#SDCC_LIB_SOURCE += $(notdir $(wildcard $(CC_ROOT)/share/sdcc/lib/src/_div*.c))
+#SDCC_LIB_SOURCE += $(notdir $(wildcard $(CC_ROOT)/share/sdcc/lib/src/_mod*.c))
+SDCC_LIB_SOURCE  = _mullong.c _mulint.c 
+SDCC_LIB_SOURCE += _divulong.c
+SDCC_LIB_SOURCE += _modsint.c _modulong.c
 SDCC_LIB_SOURCE += printf_large.c _strlen.c sprintf.c vprintf.c puts.c
-#SDCC_LIB_SOURCE  = $(notdir $(wildcard $(CC_ROOT)/share/sdcc/lib/src/_*.c))
 SDCC_LIB_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SDCC_LIB_SOURCE:.c=.o))
 
 # collect all include folders
