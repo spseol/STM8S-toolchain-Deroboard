@@ -17,7 +17,7 @@ STM8 (SPŠE) toolchain
 Tři mejkfaily pro studenta
 ------------------------------------
 
-K dispozici jsou celkem tři Makefile v adresáři `.make`. Na začátku si musíte
+K dispozici jsou celkem tři `Makefile` v adresáři `.make`. Na začátku si musíte
 jeden z nich vybrat:
 
 ```bash
@@ -38,7 +38,7 @@ tato operace může být ztrátová. Na normálních systémech (asi všechny, k
 Windows) je tato operace bezztrátová.
 
 
-### Který Makefile vybrat?
+### Který `Makefile` vybrat?
 
 Detailní popis najdete na <https://chytrosti.marrek.cz/stm8oss.html>.
 
