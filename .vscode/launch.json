@@ -31,6 +31,17 @@
                 "programOutput": true,
                 "exceptions": true
             },
+        },
+        {
+            "type": "stm8-debug",
+            "request": "launch",
+            "name": "stm8-debug",
+            "serverType": "stm8-sdcc",
+            "executable": "/home/marek/Programming/STM8/00-vzor_No-SDCC/build-STM8S208/out.elf",
+            "openOcdConfigs": [
+                "interface/stlink-dap.cfg",
+                "target/stm8s.cfg"
+            ]
         }
     ]
 }

@@ -17,7 +17,7 @@ CP = cp
 menu::
 	@echo "# Vyber si toolchain!"
 	@echo "# Detaily v REAME a na adrese "
-	@echo "# https://chytrosti.marrek.cz/vyvoj-stm8-s-opensource-nastroji.html"
+	@echo "# https://chytrosti.marrek.cz/stm8oss.html"
 	@echo
 	@echo "# Pokud chces debug a nevadi ti vetsi binarka:"
 	@echo \"make sdcc\" "     ... nebo"
@@ -29,7 +29,8 @@ menu::
 	@echo "# Pokud chces male binarky i debug a mas 'SDCC-gas' zavolej:"
 	@echo \"make sdcc-gas\"
 
-default: sdcc
+default: sdccrm
+
 sdcc:: spl
 	$(LN) .make/Makefile-sdcc Makefile || cp .make/Makefile-sdcc Makefile
 sdccrm:: spl
