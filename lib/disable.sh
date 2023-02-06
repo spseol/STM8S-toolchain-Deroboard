@@ -12,8 +12,8 @@ lib_c=lib/${name}.c
 
 if [ -f $lib_h -o -f $lib_c ]; then
     date=$(date +"%y%m%d%H%M%S")
-    [ -f $inc_h ] && mv -v $inc_h $(basename $lib_h .h)-${date}.h
-    [ -f $src_c ] && mv -v $src_c $(basename $lib_c .c)-${date}.h
+    [ -f $inc_h ] && mv -v $inc_h lib/$(basename $lib_h .h)-${date}.h
+    [ -f $src_c ] && mv -v $src_c lib/$(basename $lib_c .c)-${date}.c
 else
     [ -f $inc_h ] && mv -v $inc_h lib
     [ -f $src_c ] && mv -v $src_c lib
