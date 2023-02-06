@@ -6,10 +6,10 @@ MAKEFLAGS += --output-sync=target
 #
 #### STM8 device LowerCase
 #
-#DEVICE_FLASH=stm8s208rb
-#DEVICE_FLASH=stm8s105c6
 #DEVICE_FLASH=stm8s003k3
-DEVICE_FLASH=stm8s103f3
+#DEVICE_FLASH=stm8s103f3
+#DEVICE_FLASH=stm8s105c6
+DEVICE_FLASH=stm8s208rb
 
 ### STlink version for falsh2 targer (stm8flash program)
 STLINK=stlinkv2
@@ -67,6 +67,7 @@ CFLAGS += --asm=gas --function-sections --data-sections
 CFLAGS += --nogcse --all-callee-saves --stack-auto --fverbose-asm --float-reent --no-peep
 
 CFLAGS += -D F_CPU=$(F_CPU)
+CFLAGS += -D _SDCC_GAS_
 CFLAGS += --debug
 
 LD = stm8-ld

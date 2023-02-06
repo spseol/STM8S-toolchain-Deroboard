@@ -5,25 +5,43 @@
 //#include <stdio.h>
 //#include "uart1.h"
 
-#define _ISOC99_SOURCE
-#define _GNU_SOURCE
-
+#ifdef STM8S003
+#define LED_PORT GPIOD
+#define LED_PIN  GPIO_PIN_0
+#define BTN_PORT GPIOB
+#define BTN_PIN  GPIO_PIN_7
+#endif
+#ifdef STM8S103
+#define LED_PORT GPIOD
+#define LED_PIN  GPIO_PIN_4
+#endif
+#ifdef STM8S105
+#define LED_PORT GPIOD
+#define LED_PIN  GPIO_PIN_0
+#endif
+#ifdef STM8S208
 #define LED_PORT GPIOC
 #define LED_PIN  GPIO_PIN_5
-#define LED_HIGH   GPIO_WriteHigh(LED_PORT, LED_PIN)
-#define LED_LOW  GPIO_WriteLow(LED_PORT, LED_PIN)
-#define LED_REVERSE GPIO_WriteReverse(LED_PORT, LED_PIN)
-
 #define BTN_PORT GPIOE
 #define BTN_PIN  GPIO_PIN_4
-#define BTN_PUSH (GPIO_ReadInputPin(BTN_PORT, BTN_PIN)==RESET) 
+#endif
+
+#define LOW(BAGR) GPIO_WriteLow(BAGR##_PORT, BAGR##_PIN)
+#define HIGH(BAGR) GPIO_WriteHigh(BAGR##_PORT, BAGR##_PIN)
+#define REVERSE(BAGR) GPIO_WriteReverse(BAGR##_PORT, BAGR##_PIN)
+
+#define READ(BAGR) GPIO_ReadInputPin(BAGR##_PORT, BAGR##_PIN) 
+#define PUSH(BAGR) (GPIO_ReadInputPin(BAGR##_PORT, BAGR##_PIN)==RESET) 
 
 
 void setup(void)
 {
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);      // taktovani MCU na 16MHz
     GPIO_Init(LED_PORT, LED_PIN, GPIO_MODE_OUT_PP_LOW_SLOW);
+#if defined (BTN_PORT) || defined (BTN_PIN)
     GPIO_Init(BTN_PORT, BTN_PIN, GPIO_MODE_IN_FL_NO_IT);
+#endif /* 
+     */
 
     init_milis();
     //init_uart1();
@@ -32,14 +50,18 @@ void setup(void)
 
 int main(void)
 {
+  
     uint32_t time = 0;
 
     setup();
 
     while (1) {
-
-        if (milis() - time > 333 && !BTN_PUSH) {
-            LED_REVERSE; 
+#if defined (BTN_PORT) || defined (BTN_PIN)
+        if (milis() - time > 333 && !PUSH(BTN)) {
+#else
+        if (milis() - time > 333 ) {
+#endif
+            REVERSE(LED); 
             time = milis();
             //printf("%ld\n", time);
         }

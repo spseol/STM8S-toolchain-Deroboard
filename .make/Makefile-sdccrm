@@ -1,20 +1,20 @@
-MAKEFLAGS := --jobs=$(shell nproc)
-MAKEFLAGS += --output-sync=target
+#MAKEFLAGS := --jobs=$(shell nproc)
+#MAKEFLAGS += --output-sync=target
 ######################################################
 #         Makefile for sdccrm
 ######################################################
 #
 #### STM8 device
 #
-#DEVICE_FLASH=stm8s208rb
-#DEVICE_FLASH=stm8s105c6
 #DEVICE_FLASH=stm8s003k3
-DEVICE_FLASH=stm8s103f3
+#DEVICE_FLASH=stm8s103f3
+DEVICE_FLASH=stm8s105c6
+#DEVICE_FLASH=stm8s208rb
 
 ### STlink version for falsh2 targer (stm8flash program)
-STLINK=stlinkv2
 STLINK=stlink
-STLINK=stlinkv21
+#STLINK=stlinkv2
+#STLINK=stlinkv21
 
 F_CPU=16000000
 
@@ -129,7 +129,7 @@ $(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
 	@echo 
 
 
-$(OUTPUT_DIR)/%.asm: %.c Makefile $(PRJ_INCS) | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.asm: %.c Makefile exclude_reference $(PRJ_INCS) | $(OUTPUT_DIR)
 	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
 
 $(OUTPUT_DIR):
