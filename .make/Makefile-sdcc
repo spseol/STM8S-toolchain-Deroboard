@@ -1,19 +1,21 @@
-MAKEFLAGS := --jobs=$(shell nproc)
+#MAKEFLAGS := --jobs=1
+MAKEFLAGS := --jobs=$(shell nproc --ignore 1)
 MAKEFLAGS += --output-sync=target
+MAKEFLAGS += --load-average=$(shell nproc)
 ######################################################
 #         Makefile pro čísté SDCC
 ######################################################
 #
-#### STM8 device
+#### STM8 device LowerCase
 #
-DEVICE_FLASH=stm8s208rb
-#DEVICE_FLASH=stm8s105c6
 #DEVICE_FLASH=stm8s003k3
 #DEVICE_FLASH=stm8s103f3
+#DEVICE_FLASH=stm8s105c6
+DEVICE_FLASH=stm8s208rb
 
 ### STlink version for falsh2 targer (stm8flash program)
-STLINK=stlinkv2
-STLINK=stlink
+#STLINK=stlink
+#STLINK=stlinkv2
 STLINK=stlinkv21
 
 F_CPU=16000000
@@ -30,8 +32,6 @@ CC = $(CC_ROOT)/bin/sdcc
 #DEVICE=STM8S103
 DEVICE=$(shell .make/device $(DEVICE_FLASH))
 DEVICE_FLASH_UP=$(shell echo $(DEVICE_FLASH) | tr '[:lower:]' '[:upper:]')
-
-
 
 MKDIR = mkdir
 CP = cp
@@ -51,6 +51,7 @@ else
 	target = target/stm8s.cfg
 endif
 OPENOCD = openocd -f .make/stm8s-flash.cfg -f $(interface) -f $(target)
+
 
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
@@ -123,9 +124,9 @@ VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
 elf:: $(TARGET).elf
 ihx:: out.ihx
 out.ihx::
-	make half-clean
-	IHEX_NODEBUG=1 make $(TARGET).ihx
-	make half-clean
+	$(MAKE) half-clean
+	IHEX_NODEBUG=1 $(MAKE) $(TARGET).ihx
+	$(MAKE) half-clean
 
 
 $(TARGET).elf: $(PRJ_OBJECTS) $(SPL_OBJECTS)
@@ -153,21 +154,21 @@ clean: half-clean
 
 flash: $(TARGET).elf
 ifeq ($(OS),Windows_NT)
-	$(STVP) -BoardName=ST-LINK -Device=$(DEVICE_FLASH_UP) -Port=USB -ProgMode=SWIM -no_loop -no_log -FileProg=$(TARGET).ihx
+	+$(STVP) -BoardName=ST-LINK -Device=$(DEVICE_FLASH_UP) -Port=USB -ProgMode=SWIM -no_loop -no_log -FileProg=$(TARGET).ihx
 else
-	$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
+	+$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
 endif
 
 flash2: out.ihx
-	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w out.ihx
+	+stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w out.ihx
 
 rebuild::
-	make clean
-	make 
+	$(MAKE) clean
+	$(MAKE) elf
 
 reflash::
-	make clean
-	make flash
+	$(MAKE) clean
+	$(MAKE) flash
 
 openocd::
 	$(OPENOCD) -c "init" -c "reset halt"

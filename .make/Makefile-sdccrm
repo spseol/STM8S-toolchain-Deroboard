@@ -6,7 +6,7 @@ MAKEFLAGS += --load-average=$(shell nproc)
 #         Makefile for sdccrm
 ######################################################
 #
-#### STM8 device
+#### STM8 device LowerCase
 #
 #DEVICE_FLASH=stm8s003k3
 #DEVICE_FLASH=stm8s103f3
@@ -61,7 +61,7 @@ ifeq ($(OS),Windows_NT)
 	STVP = $(STVP_ROOT)/STVP_CmdLine.exe
 else
     uname_S := $(shell uname -s)
-	
+
 	LN = ln -sf
 	PYTHON = python3
 endif
