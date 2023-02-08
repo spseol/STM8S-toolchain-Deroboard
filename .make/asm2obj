@@ -3,16 +3,22 @@
 
 
 if [[ $OS == Windows_NT ]]; then
-    echo Windows
+    echo asm2obj on Windows
     sdccrm=.make/sdccrm.exe
     sdasstm8='/c/Program Files/SDCC/bin/sdasstm8.exe'
 else
-    echo Linux
+    echo asm2obj on Linux
     sdccrm=sdccrm
     sdasstm8=sdasstm8
 fi
 
-"$sdccrm" $(tr '\r\n' ' ' < exclude_reference) -r $@
+lines=()
+while read line; do
+  lines+=("-x")
+  lines+=("$line")
+done < exclude_reference
+
+"$sdccrm" "${lines[@]}" -r $@
 
 for soubor in $@; do 
     "$sdasstm8" -plosg -ff $soubor; 

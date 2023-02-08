@@ -1,5 +1,7 @@
-#MAKEFLAGS := --jobs=$(shell nproc)
-#MAKEFLAGS += --output-sync=target
+#MAKEFLAGS := --jobs=1
+MAKEFLAGS := --jobs=$(shell nproc --ignore 1)
+MAKEFLAGS += --output-sync=target
+MAKEFLAGS += --load-average=$(shell nproc)
 ######################################################
 #         Makefile for sdccrm
 ######################################################
@@ -8,13 +10,13 @@
 #
 #DEVICE_FLASH=stm8s003k3
 #DEVICE_FLASH=stm8s103f3
-DEVICE_FLASH=stm8s105c6
-#DEVICE_FLASH=stm8s208rb
+#DEVICE_FLASH=stm8s105c6
+DEVICE_FLASH=stm8s208rb
 
 ### STlink version for falsh2 targer (stm8flash program)
-STLINK=stlink
+#STLINK=stlink
 #STLINK=stlinkv2
-#STLINK=stlinkv21
+STLINK=stlinkv21
 
 F_CPU=16000000
 
@@ -99,13 +101,14 @@ PRJ_ASSRM := $(addprefix $(OUTPUT_DIR)/, $(PRJ_SOURCE:.c=.asmrm))
 SPL_SRC_DIR = ../SPL-$(DEVICE)/src/
 SPL_INC_DIR = ../SPL-$(DEVICE)/inc/
 # add all library sources used here singly ... or all .c files in SPL src dir
-SPL_SOURCE  = stm8s_gpio.c stm8s_clk.c stm8s_tim4.c stm8s_itc.c 
+#SPL_SOURCE  = stm8s_gpio.c stm8s_clk.c stm8s_tim4.c stm8s_itc.c 
 #SPL_SOURCE += stm8s_uart1.c
+#SPL_SOURCE += stm8s_flash.c
 #SPL_SOURCE += stm8s_adc2.c
 #SPL_SOURCE += stm8s_tim1.c
 #SPL_SOURCE += stm8s_tim2.c
 #SPL_SOURCE += stm8s_tim3.c
-#SPL_SOURCE  = $(notdir $(wildcard $(SPL_SRC_DIR)/*.c))
+SPL_SOURCE  = $(notdir $(wildcard $(SPL_SRC_DIR)/*.c))
 SPL_OBJECTS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.rel))
 SPL_ASSMS := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.asm))
 SPL_ASSRM := $(addprefix $(OUTPUT_DIR)/, $(SPL_SOURCE:.c=.asmrm))
@@ -120,9 +123,12 @@ VPATH=$(PRJ_SRC_DIR):$(SPL_SRC_DIR)
 ihx:: $(TARGET).ihx
 
 $(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
+	@echo asm2obj
 	.make/asm2obj $^	
-	$(CC) $(CFLAGS) -o $(TARGET).ihx $(PRJ_OBJECTS) $(SPL_OBJECTS)
+	@echo linking 
+	$(CC) $(CFLAGS) -o $(TARGET).ihx $(PRJ_OBJECTS) $(SPL_OBJECTS) 2>&1 | tee .make/linker_output
 	$(LN) $@ ./out.ihx
+	+ .make/reference2exclude 
 	@echo 
 	@echo MemSize:
 	@$(PYTHON) .make/sizecal.py ./out.ihx
@@ -142,27 +148,21 @@ clean::
 
 flash: $(TARGET).ihx
 ifeq ($(OS),Windows_NT)
-	$(STVP) -BoardName=ST-LINK -Device=$(DEVICE_FLASH_UP) -Port=USB -ProgMode=SWIM -no_loop -no_log -FileProg=$(TARGET).ihx
+	+$(STVP) -BoardName=ST-LINK -Device=$(DEVICE_FLASH_UP) -Port=USB -ProgMode=SWIM -no_loop -no_log -FileProg=$(TARGET).ihx
 else
-	$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
+	+$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
 endif
 
 flash2: $(TARGET).ihx
-	stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).ihx
+	+stm8flash -c $(STLINK) -p $(DEVICE_FLASH) -s flash -w $(TARGET).ihx
 
 rebuild::
-	make clean
-	make ihx
+	$(MAKE) clean
+	$(MAKE) ihx
 
 reflash::
-	make clean
-	make flash
-
-openocd::
-	$(OPENOCD) -c "init" -c "reset halt"
-debug: $(TARGET).elf
-	stm8-gdb --tui $^
-
+	$(MAKE) clean
+	$(MAKE) flash
 
 switch-sdcc::
 	$(LN) .make/Makefile-sdcc Makefile || $(CP) .make/Makefile-sdcc Makefile

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+RED="\033[1;31m"
+GREEN="\033[1;32m"  # <-- [0 means not bold
+YELLOW="\033[0;33m" # <-- [1 means bold
+CYAN="\033[1;36m"
+# ... Add more colors if you like
+NC="\033[0m" # No Color
+
+BOLD=$(tput bold)
+normal=$(tput sgr0)
+
+export GREP_COLORS='ms=01;33:mc=01;33:sl=:cx=:fn=35:ln=32:bn=32:se=36'
+
+output=.make/linker_output
+if [ -s $output ]; then
+    make clean
+    grep --color=always  -E "'[^']+'|$" $output
+    if ! grep -P '^\s*SPL_SOURCE.*notdir.*wildcard' Makefile &>/dev/null; then
+        echo
+        grep -P --color=always '^\s*SPL_SOURCE' Makefile
+        echo -e "${BOLD}Please first check SPL_SOURCE in Makefile$NC" 
+        echo -en "\n  Did you chack SPL_SOURCE in Makefile? All is right? O.K.\n"
+    fi
+    echo -en "    Do you want add THIS into 'exclude_reference' file? [y/N] "
+    read yesno
+    echo
+    if [[ $yesno == 'y' ]]; then
+        names=()
+        while read name; do
+            names+="$name"
+            if grep "^$name\$" exclude_reference >/dev/null; then
+                echo "'$name' is existing in 'exclude_reference' file." 
+            else
+                echo $name >> exclude_reference
+                echo "'$name' added." 
+            fi
+        done < <(grep -P "ASlink-Warning-Undefined Global.+reference.+module\s'.+'" $output\
+            | sed -r "s/^.+Global\s'(.+)' .+$/\1/" )
+        echo -e "$BOLD\nTry call make again.\n$NC"
+    fi
+    exit 1
+else
+    exit 0
+fi
