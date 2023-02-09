@@ -1,42 +1,26 @@
+CP = cp
 
-# Switch Makefile
-
-MKDIR = mkdir
 ifeq ($(OS),Windows_NT)
     uname_S := Windows
 
+	CC_ROOT = "/c/Program Files/SDCC"
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = cp
+	PYTHON = python
 else
     uname_S := $(shell uname -s)
-
+	
+	CC_ROOT = /usr
+	CC = $(CC_ROOT)/bin/sdcc
 	LN = ln -sf
+	PYTHON = python3
 endif
-CP = cp
 
-
-menu::
-	@echo "# Vyber si toolchain!"
-	@echo "# Detaily v REAME a na adrese "
-	@echo "# https://chytrosti.marrek.cz/stm8oss.html"
-	@echo
-	@echo "# Pokud chces debug a nevadi ti vetsi binarka:"
-	@echo \"make sdcc\" "     ... nebo"
-	@echo \"make default\"
-	@echo
-	@echo "# Pokud chces male binarky a nepotrebujes debug:"
-	@echo \"make sdccrm\"
-	@echo
-	@echo "# Pokud chces male binarky i debug a mas 'SDCC-gas' zavolej:"
-	@echo \"make sdcc-gas\"
-
-default: sdccrm
-
-sdcc:: spl
-	$(LN) .make/Makefile-sdcc Makefile || cp .make/Makefile-sdcc Makefile
-sdccrm:: spl
-	$(LN) .make/Makefile-sdccrm Makefile || cp .make/Makefile-sdccrm Makefile
-sdcc-gas:: spl
-	$(LN) .make/Makefile-sdcc-gas Makefile || cp .make/Makefile-sdcc-gas Makefile
+switch-sdccrm:: spl
+	$(LN) .make/Makefile-sdccrm Makefile || $(CP) .make/Makefile-sdccrm Makefile
+  
+switch-sdcc-gas:: spl
+	$(LN) .make/Makefile-sdcc-gas Makefile || $(CP) .make/Makefile-sdcc-gas Makefile
 
 spl::
 	bash .make/spl.sh
