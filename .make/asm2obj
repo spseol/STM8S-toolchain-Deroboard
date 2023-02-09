@@ -16,7 +16,7 @@ lines=()
 while read line; do
   lines+=("-x")
   lines+=("$line")
-done < exclude_reference
+done < <(tr -d '\r' <exclude_reference)
 
 "$sdccrm" "${lines[@]}" -r $@
 
