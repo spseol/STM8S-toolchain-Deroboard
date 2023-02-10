@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SPLS=(SPL SPL-STM8S103 SPL-STM8S105 SPL-STM8S208)
+SPLS=(SPL SPL-STM8S003 SPL-STM8S103 SPL-STM8S105 SPL-STM8S208)
 
 #####################################################################################
 
