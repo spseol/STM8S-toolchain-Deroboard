@@ -30,8 +30,8 @@ endif
 CC = $(CC_ROOT)/bin/sdcc
 
 #DEVICE=STM8S103
-DEVICE=$(shell .make/device $(DEVICE_FLASH))
-DEVICE_FLASH_UP=$(shell echo $(DEVICE_FLASH) | tr '[:lower:]' '[:upper:]')
+DEVICE=$(shell bash .make/device $(DEVICE_FLASH))
+DEVICE_FLASH_STVP=$(shell bash .make/device_stvp $(DEVICE_FLASH))
 
 MKDIR = mkdir
 CP = cp
@@ -154,7 +154,7 @@ clean: half-clean
 
 flash: $(TARGET).elf
 ifeq ($(OS),Windows_NT)
-	+$(STVP) -BoardName=ST-LINK -Device=$(DEVICE_FLASH_UP) -Port=USB -ProgMode=SWIM -no_loop -no_log -FileProg=$(TARGET).ihx
+	+$(STVP) -BoardName=ST-LINK -Device=$(DEVICE_FLASH_STVP) -Port=USB -ProgMode=SWIM -no_loop -no_log -FileProg=$(TARGET).ihx
 else
 	+$(OPENOCD) -c "init" -c "program_device $(TARGET).ihx 0"
 endif

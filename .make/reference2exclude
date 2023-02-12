@@ -14,7 +14,6 @@ export GREP_COLORS='ms=01;33:mc=01;33:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 
 output=.make/linker_output
 if [ -s $output ]; then
-    make clean
     grep --color=always  -E "'[^']+'|$" $output
     if ! grep -P '^\s*SPL_SOURCE.*notdir.*wildcard' Makefile &>/dev/null; then
         echo
@@ -26,6 +25,7 @@ if [ -s $output ]; then
     read yesno
     echo
     if [[ $yesno == 'y' ]]; then
+        make clean
         names=()
         while read name; do
             names+="$name"
