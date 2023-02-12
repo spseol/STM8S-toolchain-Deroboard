@@ -1,7 +1,6 @@
 #!/bin/bash
 
 device=${1^^}
-echo $device
 
 if [[ $device =~ STM8S105.4 ]]; then
     echo STM8S105x4
