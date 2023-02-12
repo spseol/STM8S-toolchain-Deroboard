@@ -1,0 +1,12 @@
+#!/bin/bash
+
+device=${1^^}
+echo $device
+
+if [[ $device =~ STM8S105.4 ]]; then
+    echo STM8S105x4
+elif [[ $device =~ STM8S105.6 ]]; then
+    echo STM8S105x6
+else
+    echo $device
+fi
