@@ -34,12 +34,6 @@ void init_milis(void)
     TIM4_Cmd(ENABLE);
 }
 
-/* milis interrupt routine*/
-INTERRUPT_HANDLER(TIM4_UPD_OVF_IRQHandler, 23)
-{
-    TIM4_ClearFlag(TIM4_FLAG_UPDATE);
-    miliseconds++;
-}
 
 #else
 #warning "millis not defined for this platform !"

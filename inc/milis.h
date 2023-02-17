@@ -31,5 +31,4 @@
 void init_milis(void);
 MILIS_PROTOTYPE;
 
-
 #endif
