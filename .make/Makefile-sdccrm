@@ -126,9 +126,10 @@ $(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
 	@echo asm2obj
 	bash .make/asm2obj $^
 	@echo linking 
-	$(CC) $(CFLAGS) -o $(TARGET).ihx $(PRJ_OBJECTS) $(SPL_OBJECTS) 2>&1 | tee .make/linker_output
+	$(CC) $(CFLAGS) -o $(TARGET).ihx $(PRJ_OBJECTS) $(SPL_OBJECTS) \
+		> .make/linker_output 2>&1 || rm -f $(TARGET).ihx
+	+bash .make/reference2exclude .make/linker_output
 	$(LN) $@ ./out.ihx
-	+bash .make/reference2exclude
 	@echo 
 	@echo MemSize:
 	@$(PYTHON) .make/sizecal.py ./out.ihx
@@ -136,7 +137,8 @@ $(TARGET).ihx: $(PRJ_ASSMS) $(SPL_ASSMS)
 
 
 $(OUTPUT_DIR)/%.asm: %.c Makefile exclude_reference $(PRJ_INCS) | $(OUTPUT_DIR)
-	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
+	$(CC) $(CFLAGS) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@ \
+		2>&1 | $(PYTHON) .make/recolor.py
 
 $(OUTPUT_DIR):
 	$(MKDIR) -p $(OUTPUT_DIR)

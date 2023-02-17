@@ -31,3 +31,7 @@ _TIM3_CAP_COM_IRQHandler
 _TIM4_TimeBaseInit
 _TIM4_UPD_OVF_IRQHandler
 _TIM4_ClearFlag
+_putchar
+_init_uart1
+_UART1_SendData8
+_UART1_DeInit
