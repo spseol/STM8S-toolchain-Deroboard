@@ -2,12 +2,12 @@ import re
 
 
 class c:
+    bold = "\033[1m"
+    reset = "\033[0m"
     red = "\033[31m"
     yellow = "\033[33m"
     blue = "\033[34m"
     purple = "\033[35m"
-    bold = "\033[1m"
-    reset = "\033[0m"
 
 
 def colorized(color):
@@ -25,7 +25,7 @@ while True:
         break
     else:
         if not re.search("/SPL(-STM8S...)?/", line, re.I):
-            line = re.sub(r"[\w\d/-_]+(\.c|\.h)", colorized(c.bold), line, re.I)
-            line = re.sub(r"[^:]+error", colorized(c.red), line, re.I)
-            line = re.sub(r"[^:]+warning", colorized(c.yellow), line, re.I)
+            line = re.sub(r"[\w\d/-_]+(\.c|\.h)(:\d+)?", colorized(c.bold), line, re.I)
+            line = re.sub(r"[^:]+error[^:]*:", colorized(c.red), line, re.I)
+            line = re.sub(r"[^:]+warning[^:]*:", colorized(c.yellow), line, re.I)
             print(line, end="")
