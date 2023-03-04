@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 #MAKEFLAGS := --jobs=1
 MAKEFLAGS := --jobs=$(shell nproc --ignore 1)
 MAKEFLAGS += --output-sync=target
@@ -24,7 +25,9 @@ ifeq ($(OS),Windows_NT)
 	CC_ROOT = "/c/Program Files/SDCC"
 	STVP_ROOT = "/c/Program Files (x86)/STMicroelectronics/st_toolset/stvp"
 else
-	CC_ROOT = /usr
+	#CC_ROOT = /usr
+	#CC_ROOT = /usr/local
+	CC_ROOT = /usr/local/stow/sdcc-4.2.0
 endif
 ######################################################################################
 CC = $(CC_ROOT)/bin/sdcc
@@ -141,7 +144,7 @@ $(TARGET).ihx: $(PRJ_OBJECTS) $(SPL_OBJECTS)
 	@echo
 
 $(OUTPUT_DIR)/%.rel: %.c $(PRJ_INCS) Makefile | $(OUTPUT_DIR)
-	$(CC) $(CFLAGS) $(FMT_ELF) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@
+	$(CC) $(CFLAGS) $(FMT_ELF) -D$(DEVICE) $(INCLUDE) -DSKIP_TRAPS=$(SKIP_TRAPS) -c $< -o $@ 2>&1 | $(PYTHON) .make/recolor.py; exit $${PIPESTATUS[0]}
 
 $(OUTPUT_DIR):
 	$(MKDIR) -p $(OUTPUT_DIR)
