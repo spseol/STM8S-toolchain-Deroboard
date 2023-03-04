@@ -28,6 +28,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm8s_it.h"
 
+#include "milis.h"
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -461,6 +463,18 @@ INTERRUPT_HANDLER(TIM6_UPD_OVF_TRG_IRQHandler, 23)
 /*    [> Cleat Interrupt Pending bit <]*/
 /*    TIM4_ClearITPendingBit(TIM4_IT_UPDATE);*/
 /*}*/
+
+#if MILIS_32BIT_TIME==1
+extern volatile uint32_t miliseconds;      // global variable storing milis value
+#else
+extern volatile uint16_t miliseconds;      // global variable storing milis value
+#endif
+
+INTERRUPT_HANDLER(TIM4_UPD_OVF_IRQHandler, 23)
+{
+    TIM4_ClearFlag(TIM4_FLAG_UPDATE);
+    miliseconds++;
+}
 #endif /*STM8S903*/
 
 /**
