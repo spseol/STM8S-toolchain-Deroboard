@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 #MAKEFLAGS := --jobs=1
 MAKEFLAGS := --jobs=$(shell nproc --ignore 1)
 MAKEFLAGS += --output-sync=target
@@ -57,11 +58,14 @@ ifeq ($(OS),Windows_NT)
     uname_S := Windows
 
 	LN = cp
+	PYTHON = python
+
 	STVP = $(STVP_ROOT)/STVP_CmdLine.exe
 else
     uname_S := $(shell uname -s)
 
 	LN = ln -sf
+	PYTHON = python3
 endif
 
 # set compiler path & parameters 
@@ -144,7 +148,7 @@ $(TARGET).ihx: $(TARGET).elf
 	stm8-objcopy -O ihex $(TARGET).elf $(TARGET).ihx
 	$(LN) $@ ./out.ihx
 	@echo MemSize: 
-	@python3 .make/sizecal.py ./out.ihx
+	@$(PYTHON) .make/sizecal.py ./out.ihx
 	@echo
 
 
@@ -152,7 +156,7 @@ $(OUTPUT_DIR)/%.d: %.c $(PRJ_INCS) Makefile | $(OUTPUT_DIR)
 	$(CC) -c $< $(CFLAGS) -D$(DEVICE) $(INCLUDE) -MM > $@
 
 $(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR)/%.d
-	$(CC) -c $< $(CFLAGS) -D$(DEVICE) $(INCLUDE)  -o $@
+	$(CC) -c $< $(CFLAGS) -D$(DEVICE) $(INCLUDE)  -o $@ 2>&1 | $(PYTHON) .make/recolor.py; exit $${PIPESTATUS[0]}
 
 $(OUTPUT_DIR):
 	$(MKDIR) -p $(OUTPUT_DIR)
