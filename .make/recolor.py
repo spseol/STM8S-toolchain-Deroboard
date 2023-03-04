@@ -1,4 +1,8 @@
 import re
+import sys
+from colorama import Fore, Style, just_fix_windows_console
+
+just_fix_windows_console()
 
 
 class c:
@@ -13,19 +17,19 @@ class c:
 def colorized(color):
     def wrapper(match):
         word = match.group(0)
-        return c.bold + color + word + c.reset
+        return Style.BRIGHT + color + word + Style.RESET_ALL
 
     return wrapper
 
 
-while True:
-    try:
-        line = input()
-    except EOFError:
-        break
-    else:
-        if not re.search("/SPL(-STM8S...)?/", line, re.I):
-            line = re.sub(r"[\w\d/-_]+(\.c|\.h)(:\d+)?", colorized(c.bold), line, re.I)
-            line = re.sub(r"[^:]+error[^:]*:", colorized(c.red), line, re.I)
-            line = re.sub(r"[^:]+warning[^:]*:", colorized(c.yellow), line, re.I)
-            print(line, end="")
+while line := sys.stdin.readline():
+    if not re.search("/SPL(-STM8S...)?/", line, re.I):
+        line = re.sub(
+            r"[\w\d/-_]+(\.c|\.h)(:\d+)?",
+            colorized(Fore.LIGHTWHITE_EX),
+            line,
+            re.I,
+        )
+        line = re.sub(r"[^:]+error[^:]*:", colorized(Fore.LIGHTRED_EX), line, re.I)
+        line = re.sub(r"[^:]+warning[^:]*:", colorized(Fore.LIGHTYELLOW_EX), line, re.I)
+        sys.stderr.write(line)
