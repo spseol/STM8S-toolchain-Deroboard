@@ -12,9 +12,13 @@ normal=$(tput sgr0)
 
 export GREP_COLORS='ms=01;33:mc=01;33:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 
-output=.make/linker_output
-if [ -s $output ]; then
-    grep --color=always  -E "'[^']+'|$" $output
+regular="ASlink-Warning-Undefined Global.+reference.+module\s'.+'"
+
+
+output=$1
+
+if [ -s $output ] && grep -P "$regular" $output; then
+    grep --color=always  -E "'[^']+'|Warning|$" $output
     if ! grep -P '^\s*SPL_SOURCE.*notdir.*wildcard' Makefile &>/dev/null; then
         echo
         grep -P --color=always '^\s*SPL_SOURCE' Makefile
@@ -35,11 +39,12 @@ if [ -s $output ]; then
                 echo $name >> exclude_reference
                 echo "'$name' added." 
             fi
-        done < <(grep -P "ASlink-Warning-Undefined Global.+reference.+module\s'.+'" $output\
+        done < <(grep -P "$regular" $output\
             | sed -r "s/^.+Global\s'(.+)' .+$/\1/" )
         echo -e "$BOLD\nTry call make again.\n$NC"
     fi
     exit 1
 else
+    grep --color=always -P "'[^']+'|\"[^\"]+\"|([\w\d_-]+(Warning|Error)[^:]+)|$" $output
     exit 0
 fi
