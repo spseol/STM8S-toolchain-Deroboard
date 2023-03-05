@@ -16,18 +16,6 @@
             "defines": [
                 "STM8S208",
                 "_SDCC_"
-            ],
-            //"compilerPath": "C:/Program Files/SDCC/bin/sdcc",
-            "compilerPath": "/usr/bin/sdcc",
-            "cStandard": "c99",
-            "intelliSenseMode": "gcc-arm",
-            "compilerArgs": [
-                "-I inc",
-                "-I SPL/inc",
-                "-I ../SPL/inc",
-                "-mstm8",
-                "-lstm8",
-                "--std-sdcc99"
             ]
         }
     ],
