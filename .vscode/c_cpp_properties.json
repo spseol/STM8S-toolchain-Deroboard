@@ -1,35 +1,21 @@
 {
-    "env": {
-        "myDefaultIncludePath": [
-            "${workspaceFolder}",
-            "${workspaceFolder}/inc"
-        ],
-        "myCompilerPath": "/usr/bin/sdcc"
-    },
     "configurations": [
         {
             "name": "STM8",
             "includePath": [
-                "${workspaceFolder}/inc",
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/../SPL/inc/",
-                "${workspaceFolder}/SPL/inc/"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../SPL/**",
+                "/usr/share/sdcc/include",
+                "/usr/local/stow/sdcc-4.2.0/share/sdcc/include",
+                "C:/Program Files/SDCC/include/**",
+                "inc",
+                "../SPL/inc/",
+                "../inc",
+                "SPL/inc/"
             ],
             "defines": [
-                "STM8S",
+                "STM8S208",
                 "_SDCC_"
-            ],
-            "compilerPath": "/usr/bin/sdcc",
-            "cStandard": "c99",
-            "cppStandard": "c++11",
-            "intelliSenseMode": "gcc-x64",
-            "compilerArgs": [
-                "-I inc",
-                "-I SPL/inc",
-                "-I ../SPL/inc",
-                "-mstm8",
-                "-lstm8",
-                "--std-sdcc99"
             ]
         }
     ],
